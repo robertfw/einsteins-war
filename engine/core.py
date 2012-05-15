@@ -6,7 +6,6 @@ from engine.controls import KeyBoardController
 from engine.widgets import WidgetHandler, TextWidget
 from engine.utils import quit
 from engine.gameclock import GameClock
-import abc
 
 
 class GameCore(object):
@@ -47,21 +46,29 @@ class GameCore(object):
         self.clock = GameClock(max_ups=30,
                   max_fps=0,
                   use_wait=False,
-                  update_callback=self._update,
-                  frame_callback=self._draw,
+                  update_callback=self._master_update,
+                  frame_callback=self._master_draw,
                   paused_callback=None,
                   time_source=time_source
                   )
 
-    @abc.abstractmethod
     def _update(self, dt):
         '''Update the game state'''
         return
 
-    @abc.abstractmethod
+    def _master_update(self, dt):
+        self._handle_events()
+        self._update(dt)
+
     def _draw(self, interpolation):
         '''Update the display'''
         return
+
+    def _master_draw(self, interpolation):
+        self.renderer.reset_view()
+        self._draw(interpolation)
+        self.renderer.draw_sprite_map(self.widgets.get_widget_map())
+        self.renderer.update()
 
     def _handle_events(self):
         for event in pygame.event.get():
