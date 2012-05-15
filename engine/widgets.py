@@ -13,6 +13,10 @@ class WidgetHandler(object):
         self.widgets[pos] = widget
         self.widget_map[name] = pos
 
+    #TODO: see if there is a nicer way to handle this
+    def get_widget(self, name):
+        return self.widgets[self.widget_map[name]]
+
 
 class BaseWidget(Sprite):
     pass

@@ -7,64 +7,74 @@ from engine.widgets import WidgetHandler, TextWidget
 from engine.utils import quit
 from engine.gameclock import GameClock
 
-#config settings
-KEY_REPEAT_DELAY = 250  # how long to wait before resending held down keys
-KEY_REPEAT_INTERVAL = 100  # how often to resend held down keys
 
-VIEWPORT_SIZE = (800, 600)
-TARGET_FPS = 30
+class Game(object):
+    clock = None
+    renderer = None
 
-#initialize pygame
-pygame.init()
+    def __init__(self):
+        #config settings
+        KEY_REPEAT_DELAY = 250  # how long to wait before resending held down keys
+        KEY_REPEAT_INTERVAL = 100  # how often to resend held down keys
 
-#create a new renderer
-renderer = Renderer(VIEWPORT_SIZE)
+        VIEWPORT_SIZE = (800, 600)
 
-#create a new controller
-#TODO: refactor player controls to abstract actions from implementation
-keyboard_controller = KeyBoardController({
-    K_ESCAPE: quit
-})
+        #initialize pygame
+        pygame.init()
 
-keyboard_controller.set_repeat(KEY_REPEAT_DELAY, KEY_REPEAT_INTERVAL)
+        #create a new renderer
+        self.renderer = Renderer(VIEWPORT_SIZE)
 
-#create a widget handler
-widget_handler = WidgetHandler()
+        #create a new controller
+        #TODO: refactor player controls to abstract actions from implementation
+        self.keyboard_controller = KeyBoardController({
+            K_ESCAPE: quit
+        })
 
-#simple widget to show tick
-fps_display = TextWidget(font_size=40)
-widget_handler.add_widget('fps_display', fps_display, (20, 20))
+        self.keyboard_controller.set_repeat(KEY_REPEAT_DELAY, KEY_REPEAT_INTERVAL)
 
-#create our game clock
-if sys.platform in('win32', 'cygwin'):
-    time_source = None
-else:
-    time_source = lambda: pygame.time.get_ticks() / 1000.
+        #create a widget handler
+        self.widgets = WidgetHandler()
 
-clock = GameClock(ticks_per_second=30,
+        #simple widget to show tick
+        fps_display = TextWidget(font_size=40)
+        ups_display = TextWidget(font_size=40)
+        self.widgets.add_widget('fps_display', fps_display, (20, 20))
+        self.widgets.add_widget('ups_display', ups_display, (20, 100))
+
+        if sys.platform in('win32', 'cygwin'):
+            time_source = None
+        else:
+            time_source = lambda: pygame.time.get_ticks() / 1000.
+
+        self.clock = GameClock(max_ups=30,
                   max_fps=0,
                   use_wait=False,
-                  max_frame_skip=5,
-                  update_callback=None,
-                  frame_callback=None,
+                  update_callback=self._update,
+                  frame_callback=self._draw,
+                  paused_callback=None,
                   time_source=time_source
                   )
 
-while True:
-    fps_display.set_text(round(clock.get_fps(), 2))
+    def run(self):
+        while True:
+            self.clock.tick()
 
-    clock.tick()
+    def _update(self, interpolation):
+        self._handle_events()
 
-    #TODO: convert this to use callbacks
-    if clock.update_ready:
-        pass
-    elif clock.frame_ready:
-        renderer.reset_view()
-        widgets = widget_handler.get_widget_map()
-        renderer.draw_sprite_map(widgets)
-        renderer.update()
+    def _draw(self, dt):
+        self.widgets.get_widget('fps_display').set_text('fps: {fps}'.format(fps=round(self.clock.fps, 2)))
+        self.widgets.get_widget('ups_display').set_text('ups: {ups}'.format(ups=round(self.clock.ups, 2)))
 
-    for event in pygame.event.get():
-        if event.type == KEYDOWN or event.type == KEYUP:
-            keystates = pygame.key.get_pressed()
-            keyboard_controller.evaluate_keystates(keystates)
+        self.renderer.reset_view()
+        self.renderer.draw_sprite_map(self.widgets.get_widget_map())
+        self.renderer.update()
+
+    def _handle_events(self):
+        for event in pygame.event.get():
+            if event.type == KEYDOWN or event.type == KEYUP:
+                keystates = pygame.key.get_pressed()
+                self.keyboard_controller.evaluate_keystates(keystates)
+
+Game().run()
