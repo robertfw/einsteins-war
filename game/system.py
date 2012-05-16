@@ -15,6 +15,23 @@ class DumbMass(object):
     mass = None
 
 
+class Moon(object):
+    '''
+    Represents a planet
+    '''
+
+    mass = None
+
+    def get_sprite(self):
+        sprite = Sprite()
+        surface = Surface((10, 10))
+        surface.set_colorkey((0, 0, 0))
+        draw.circle(surface, (55, 55, 55), (5, 5), 5, 0)
+        sprite.image = surface
+
+        return sprite
+
+
 class Planet(object):
     '''
     Represents a planet
@@ -24,9 +41,9 @@ class Planet(object):
 
     def get_sprite(self):
         sprite = Sprite()
-        surface = Surface((25, 25))
+        surface = Surface((20, 20))
         surface.set_colorkey((0, 0, 0))
-        draw.circle(surface, (0, 255, 0), (12, 12), 12, 0)
+        draw.circle(surface, (0, 255, 0), (10, 10), 10, 0)
         sprite.image = surface
 
         return sprite
@@ -109,9 +126,9 @@ class System(object):
         #TODO: put this in a more accessible place
         AU = 149598000000  # 1 AU in meters
 
-        AU = 100  # override - full value is crashing big rects
+        AU = 500  # override - full value is crashing big rects
 
-        #TODO: these should not be here
+        #TODO: solar system definition should be in a config file
         sol = Star()
         self.map.add_object(sol, (0, 0))
 
@@ -127,45 +144,41 @@ class System(object):
         earth = Planet()
         self.add_orbiting_object(sol, earth, 1 * AU, 365)
 
-        luna = Planet()  # TODO: moon subclass?
-        self.add_orbiting_object(earth, luna, .25 * AU, 29)
+        self.add_orbiting_object(earth, Moon(), .25 * AU, 29)
 
         #Mars
         mars = Planet()
         self.add_orbiting_object(sol, mars, 1.6 * AU, 686)
 
-        self.add_orbiting_object(mars, Planet(), .25 * AU, 30)
-        self.add_orbiting_object(mars, Planet(), .35 * AU, 65)
+        self.add_orbiting_object(mars, Moon(), .25 * AU, 30)
+        self.add_orbiting_object(mars, Moon(), .35 * AU, 65)
 
         #Jupiter
         jupiter = Planet()
         self.add_orbiting_object(sol, jupiter, 5.2 * AU, 4332)
-        self.add_orbiting_object(jupiter, Planet(), .25 * AU, 30)
-        self.add_orbiting_object(jupiter, Planet(), .35 * AU, 65)
-        self.add_orbiting_object(jupiter, Planet(), .40 * AU, 95)
-        self.add_orbiting_object(jupiter, Planet(), .50 * AU, 115)
+        self.add_orbiting_object(jupiter, Moon(), .25 * AU, 30)
+        self.add_orbiting_object(jupiter, Moon(), .35 * AU, 65)
+        self.add_orbiting_object(jupiter, Moon(), .40 * AU, 95)
+        self.add_orbiting_object(jupiter, Moon(), .50 * AU, 115)
 
         #Saturn
         saturn = Planet()
         self.add_orbiting_object(sol, saturn, 10 * AU, 10759)
-        self.add_orbiting_object(saturn, Planet(), .25 * AU, 30)
-        self.add_orbiting_object(saturn, Planet(), .35 * AU, 65)
-        self.add_orbiting_object(saturn, Planet(), .40 * AU, 95)
-        self.add_orbiting_object(saturn, Planet(), .50 * AU, 115)
+        self.add_orbiting_object(saturn, Moon(), .25 * AU, 30)
+        self.add_orbiting_object(saturn, Moon(), .35 * AU, 65)
+        self.add_orbiting_object(saturn, Moon(), .40 * AU, 95)
+        self.add_orbiting_object(saturn, Moon(), .50 * AU, 115)
 
         #Uranus
         uranus = Planet()
         self.add_orbiting_object(sol, uranus, 19 * AU, 30799)
-        self.add_orbiting_object(uranus, Planet(), .25 * AU, 30)
-        self.add_orbiting_object(uranus, Planet(), .35 * AU, 65)
+        self.add_orbiting_object(uranus, Moon(), .25 * AU, 30)
+        self.add_orbiting_object(uranus, Moon(), .35 * AU, 65)
 
         #Neptune
         neptune = Planet()
         self.add_orbiting_object(sol, neptune, 30 * AU, 60190)
-        self.add_orbiting_object(neptune, Planet(), .25 * AU, 30)
-        
-
-
+        self.add_orbiting_object(neptune, Moon(), .25 * AU, 30)
 
     def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
 
@@ -199,15 +212,21 @@ class SystemWindow(Map2DWindow):
         super(SystemWindow, self).__init__(*args, **kwargs)
 
     def get_sprite_map(self, interpolation):
-        objects = self.get_objects()
+        if interpolation == 0:
+            self.viewable_objects = self.get_objects()
+
+        #TODO: implement orbit interpolation
         
-        layers = [{}, {}]
-        for pos in objects:
-            obj = objects[pos]
-            
+        #TODO: this layering logic shouldn't be hardcoded
+        layers = [{}, {}, {}]
+        for pos in self.viewable_objects:
+            obj = self.viewable_objects[pos]
+                        
             if isinstance(obj, Star):
-                layers[1][pos] = obj.get_sprite()
-            elif isinstance(obj, Planet):
                 layers[0][pos] = obj.get_sprite()
+            elif isinstance(obj, Planet):
+                layers[1][pos] = obj.get_sprite()
+            elif isinstance(obj, Moon):
+                layers[2][pos] = obj.get_sprite()
         
         return layers

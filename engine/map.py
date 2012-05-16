@@ -12,6 +12,7 @@ class Map2D(object):
 
     def __init__(self):
         self.max_axis = sys.maxint
+        print self.max_axis
 
     def add_object(self, obj, pos):
         key = id(obj)
@@ -77,6 +78,7 @@ class Map2DWindow(Window):
         left = self._center[0] - (width / 2)
 
         self._slice_rect = Rect((top, left), (width, height))
+        print self._slice_rect
 
     def get_objects(self):
         raw = self._map2d.get_objects_in_rect(self._slice_rect)
