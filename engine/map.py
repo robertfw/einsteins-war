@@ -2,7 +2,7 @@ from engine.render import Window
 
 
 class Map2D(object):
-    '''A map is a representation of objects in a physical space'''
+    '''A representation of objects in a 2d physical space'''
     _map = {}
     _pos_index = {}
     _obj_cache = {}
