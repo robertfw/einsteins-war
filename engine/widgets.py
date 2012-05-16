@@ -30,8 +30,10 @@ class BaseWidget(Sprite):
         self.binding = binding
 
     def update_value(self, interpolation):
-        self.value = self.binding()
-        self.update_image()
+        new_value = self.binding()
+        if new_value != self.value:
+            self.value = new_value
+            self.update_image()
 
 
 class TextWidget(BaseWidget):
