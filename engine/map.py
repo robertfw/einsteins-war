@@ -28,6 +28,10 @@ class Map2D(object):
         self.objects[new_pos] = obj
         self._map[key] = new_pos
 
+    def get_position(self, obj):
+        key = id(obj)
+        return self._map[key]
+
     def get_objects_in_rect(self, rect):
         '''return objects within a given rectangle'''
         objects = {}
