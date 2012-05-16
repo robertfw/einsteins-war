@@ -55,4 +55,4 @@ class System(object):
 
     def spawn_objects(self):
         star = Star()
-        self.map.add_object(star, (0, 0))
+        self.map.add_object(star, (200, 200))
