@@ -46,13 +46,14 @@ class Map2DWindow(Window):
         self._update_slice_rect()
 
     def _update_slice_rect(self):
-        width = self.rect.width * self._scale
-        height = self.rect.height * self._scale
+        width = self.rect.width * (1 / self._scale)
+        height = self.rect.height * (1 / self._scale)
 
         top = self.center[1] - (height / 2)
         left = self.center[0] - (width / 2)
 
         self._slice_rect = Rect((top, left), (width, height))
+        print self._slice_rect
 
     def get_objects(self):
         raw = self._map2d.get_objects_in_rect(self._slice_rect)
