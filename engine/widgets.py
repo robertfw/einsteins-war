@@ -37,7 +37,6 @@ class TextWidget(BaseWidget):
         self.text = str(text)
 
     def update_image(self):
-        #TODO: should only re-render if text has changed
         obj = Font(self.font, self.font_size)
         self.image = obj.render(self.text, True, self.color)
 

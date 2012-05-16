@@ -15,13 +15,9 @@ class GameCore(object):
                  key_repeat_interval=100,
                  viewport_size=(800, 600)):
 
-        #initialize pygame
         pygame.init()
-
-        #create a new renderer
         self.renderer = Renderer(viewport_size)
 
-        #create a new controller
         #TODO: refactor controls to be more abstract
         self.keyboard_controller = KeyBoardController({
             K_ESCAPE: quit
@@ -29,12 +25,11 @@ class GameCore(object):
 
         self.keyboard_controller.set_repeat(key_repeat_delay, key_repeat_interval)
 
-        #create a widget handler
         self.widgets = WidgetHandler()
 
         #simple widget to show tick
-        fps_display = TextWidget(font_size=40)
-        ups_display = TextWidget(font_size=40)
+        fps_display = TextWidget(font_size=20, color=(0, 255, 0))
+        ups_display = TextWidget(font_size=20, color=(50, 50, 255))
         self.widgets.add_widget('fps_display', fps_display, (20, 20))
         self.widgets.add_widget('ups_display', ups_display, (20, 100))
 
