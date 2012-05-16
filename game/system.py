@@ -122,8 +122,13 @@ class System(object):
         if start_angle is None:
             start_angle = random.randint(0, 359)
 
+        start_angle = math.radians(start_angle)
+
+        x = math.sin(start_angle) * distance
+        y = math.cos(start_angle) * distance
+
         self.orbits.append(orbit)
-        self.map.add_object(child, (distance, distance))
+        self.map.add_object(child, (x, y))
 
 
 class SystemWindow(Map2DWindow):
