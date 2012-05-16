@@ -52,7 +52,9 @@ class Map2DWindow(Window):
         top = self.center[1] - (height / 2)
         left = self.center[0] - (width / 2)
 
+        print '({0}, {1}) ({2}, {3})'.format(top, left, width, height)
         self._slice_rect = Rect((top, left), (width, height))
+
         print self._slice_rect
 
     def get_objects(self):

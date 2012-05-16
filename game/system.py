@@ -2,7 +2,8 @@ from engine.map import Map2D, Map2DWindow
 from engine.render import Sprite
 from pygame import draw
 from pygame.surface import Surface
-
+import random
+import math
 
 class DumbMass(object):
     '''
@@ -71,9 +72,10 @@ class System(object):
 
     def spawn_objects(self):
         #TODO: put this in a more accessible place
-        #AU = 149598000000  # 1 AU in meters
-        AU = 200
-        
+        AU = 149598000000  # 1 AU in meters
+
+        AU = 100
+
         #TODO: these should not be here
         sol = Star()
         self.map.add_object(sol, (0, 0))
@@ -110,12 +112,15 @@ class System(object):
         neptune = Planet()
         self.add_orbiting_object(sol, neptune, 30 * AU, 60190)
 
-    def add_orbiting_object(self, parent, child, distance, period):
+    def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
         '''helper function to add an object to the map with an orbit'''
         orbit = Orbit()
         orbit.parent = parent
         orbit.child = child
         orbit.period = period
+
+        if start_angle is None:
+            start_angle = random.randint(0, 359)
 
         self.orbits.append(orbit)
         self.map.add_object(child, (distance, distance))
