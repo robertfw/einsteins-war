@@ -126,6 +126,7 @@ class GalaxyWindow(Map2DWindow):
             #we're not interpolating - get fresh objects
             self.viewable_objects = self.get_objects()
         else:
+            #TODO: implement interpolation
             pass
 
         layers = []
