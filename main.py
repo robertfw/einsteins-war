@@ -4,6 +4,7 @@ from engine.utils import quit
 from pygame.locals import K_ESCAPE
 
 from game.system import System
+from game.renderers import render_system
 
 
 class Game(GameCore):
@@ -20,10 +21,10 @@ class Game(GameCore):
             K_ESCAPE: quit
         }
 
-        self.System = System()
+        self.system = System()
 
     def _update(self, dt):
-        pass
+        render_system(self.renderer, self.system)
 
     def _draw(self, interpolation):
         pass

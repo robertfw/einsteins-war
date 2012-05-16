@@ -1,24 +1,22 @@
-class GalaxyRenderer(object):
-    pass
+from game.system import Star
+from pygame.sprite import Sprite
+from pygame import draw
+from pygame.surface import Surface
 
 
-class SystemRenderer(object):
-    
-    def get_sprites(self, system, extents):
-        pass
+def render_system(renderer, system):
+    objects = system.get_objects()
+    sprites = []
+    for pos in objects:
+        obj = objects[pos]
+        if obj is Star:
+            sprites[pos] = generate_star_sprite(obj)
 
 
-class ShipRenderer(object):
-    pass
+def generate_star_sprite(star):
+    sprite = Sprite()
+    surface = Surface((25, 25))
+    draw.circle(surface, (255, 0, 0), (0, 0), 25, 0)
+    sprite.image = surface
 
-
-class PlanetRenderer(object):
-    pass
-
-
-class DumbMassRenderer(object):
-    pass
-
-
-class StarRenderer(object):
-    pass
+    return sprite
