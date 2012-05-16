@@ -8,6 +8,7 @@ class Map2D(object):
     objects = {}
     max_axis = None
     _map = {}
+    _counter = 0
 
     def __init__(self):
         self.max_axis = sys.maxint
@@ -18,12 +19,14 @@ class Map2D(object):
         self._map[key] = pos
         return key
 
-    def move_object(self, key, new_pos):
+    def move_object(self, obj, new_pos):
+        key = id(obj)
         old_pos = self._map[key]
 
         obj = self.objects[old_pos]
         self.objects[old_pos] = None
         self.objects[new_pos] = obj
+        self._map[key] = new_pos
 
     def get_objects_in_rect(self, rect):
         '''return objects within a given rectangle'''
