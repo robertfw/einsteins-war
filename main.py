@@ -3,9 +3,10 @@ from engine.core import GameCore
 from engine.widgets import TextWidget
 from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e
 import pygame
-
-from game.system import SystemWindow, System
+from game.galaxy import GalaxyWindow, Galaxy
 from game import commands
+from game.units import AU, LY
+from game import systems
 
 
 class Game(GameCore):
@@ -14,17 +15,23 @@ class Game(GameCore):
         super(Game, self).__init__(*args, **kwargs)
 
         def convert_scale():
-                amount = 1 / self.system_window.scale
+            amount = 1 / self.galaxy_window.scale * self.display.resolution[0]
 
-                if amount > 1000:
-                        amount = amount / 1000
-                        units = 'km'
-                else:
-                        units = 'm'
+            if amount > LY:
+                amount = amount / LY
+                units = 'ly'
+            elif amount > AU:
+                amount = amount / AU
+                units = 'au'
+            elif amount > 1000:
+                amount = amount / 1000
+                units = 'km'
+            else:
+                units = 'm'
 
-                amount = round(amount, 2)
+            amount = round(amount, 2)
 
-                return '1px : {amount:,.2f}{units}'.format(amount=amount, units=units)
+            return '{amount:,.2f}{units}'.format(amount=amount, units=units)
 
         fps_display = TextWidget(binding=lambda: '{fps} fps'.format(fps=self.clock.fps), font_size=20, color=(100, 255, 100))
         ups_display = TextWidget(binding=lambda: '{ups} ups'.format(ups=self.clock.ups), font_size=20, color=(100, 100, 255))
@@ -43,15 +50,17 @@ class Game(GameCore):
             K_ESCAPE: commands.quit
         }
 
-        self.scale_demo()
-
-    def scale_demo(self):
         #create a new window, make it the full size of our current display
-        self.system_window = SystemWindow(system=System(), rect=((0, 0), self.display.resolution), game=self)
-        self.windows.add_window(self.system_window)
-        self.system_window.scale = 0.000000001
+        self.galaxy = Galaxy()
+        self.galaxy_window = GalaxyWindow(system=self.galaxy, rect=((0, 0), self.display.resolution), game=self)
+        self.windows.add_window(self.galaxy_window)
+        self.galaxy_window.scale = 0.000000001
 
-        self.register_update_callback(self.system_window.system.update_orbits)
+        #add some objects
+        systems.sol(self.galaxy)
+        systems.alpha_centauri(self.galaxy)
+
+        self.register_update_callback(self.galaxy.update)
 
         #add some keybinds for moving/zooming
         pan_speed = 500
@@ -59,28 +68,28 @@ class Game(GameCore):
 
         self.keyboard.bindings = {
             K_w: {
-                'up': lambda: self.system_window.adjust_pan_vector((0, pan_speed)),
-                'down': lambda: self.system_window.adjust_pan_vector((0, -pan_speed)),
+                'up': lambda: self.galaxy_window.adjust_pan_vector((0, pan_speed)),
+                'down': lambda: self.galaxy_window.adjust_pan_vector((0, -pan_speed)),
             },
             K_a: {
-                'up': lambda: self.system_window.adjust_pan_vector((pan_speed, 0)),
-                'down': lambda: self.system_window.adjust_pan_vector((-pan_speed, 0)),
+                'up': lambda: self.galaxy_window.adjust_pan_vector((pan_speed, 0)),
+                'down': lambda: self.galaxy_window.adjust_pan_vector((-pan_speed, 0)),
             },
             K_s: {
-                'up': lambda: self.system_window.adjust_pan_vector((0, -pan_speed)),
-                'down': lambda: self.system_window.adjust_pan_vector((0, pan_speed)),
+                'up': lambda: self.galaxy_window.adjust_pan_vector((0, -pan_speed)),
+                'down': lambda: self.galaxy_window.adjust_pan_vector((0, pan_speed)),
             },
             K_d: {
-                'up': lambda: self.system_window.adjust_pan_vector((-pan_speed, 0)),
-                'down': lambda: self.system_window.adjust_pan_vector((pan_speed, 0)),
+                'up': lambda: self.galaxy_window.adjust_pan_vector((-pan_speed, 0)),
+                'down': lambda: self.galaxy_window.adjust_pan_vector((pan_speed, 0)),
             },
             K_e: {
-                'up': lambda: self.system_window.adjust_zoom_vector(zoom_speed),
-                'down': lambda: self.system_window.adjust_zoom_vector(-zoom_speed)
+                'up': lambda: self.galaxy_window.adjust_zoom_vector(zoom_speed),
+                'down': lambda: self.galaxy_window.adjust_zoom_vector(-zoom_speed)
             },
             K_q: {
-                'up': lambda: self.system_window.adjust_zoom_vector(-zoom_speed),
-                'down': lambda: self.system_window.adjust_zoom_vector(zoom_speed)
+                'up': lambda: self.galaxy_window.adjust_zoom_vector(-zoom_speed),
+                'down': lambda: self.galaxy_window.adjust_zoom_vector(zoom_speed)
             },
             K_ESCAPE: {
                 'down': commands.quit
