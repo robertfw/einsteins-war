@@ -109,7 +109,7 @@ class System(object):
         #TODO: put this in a more accessible place
         AU = 149598000000  # 1 AU in meters
 
-        AU = 1000
+        AU = 100  # override - full value is crashing big rects
 
         #TODO: these should not be here
         sol = Star()
@@ -135,26 +135,42 @@ class System(object):
         self.add_orbiting_object(sol, mars, 1.6 * AU, 686)
 
         self.add_orbiting_object(mars, Planet(), .25 * AU, 30)
-        self.add_orbiting_object(mars, Planet(), .75 * AU, 45)
+        self.add_orbiting_object(mars, Planet(), .35 * AU, 65)
 
         #Jupiter
         jupiter = Planet()
         self.add_orbiting_object(sol, jupiter, 5.2 * AU, 4332)
+        self.add_orbiting_object(jupiter, Planet(), .25 * AU, 30)
+        self.add_orbiting_object(jupiter, Planet(), .35 * AU, 65)
+        self.add_orbiting_object(jupiter, Planet(), .40 * AU, 95)
+        self.add_orbiting_object(jupiter, Planet(), .50 * AU, 115)
 
         #Saturn
         saturn = Planet()
         self.add_orbiting_object(sol, saturn, 10 * AU, 10759)
+        self.add_orbiting_object(saturn, Planet(), .25 * AU, 30)
+        self.add_orbiting_object(saturn, Planet(), .35 * AU, 65)
+        self.add_orbiting_object(saturn, Planet(), .40 * AU, 95)
+        self.add_orbiting_object(saturn, Planet(), .50 * AU, 115)
 
         #Uranus
         uranus = Planet()
         self.add_orbiting_object(sol, uranus, 19 * AU, 30799)
+        self.add_orbiting_object(uranus, Planet(), .25 * AU, 30)
+        self.add_orbiting_object(uranus, Planet(), .35 * AU, 65)
 
         #Neptune
         neptune = Planet()
         self.add_orbiting_object(sol, neptune, 30 * AU, 60190)
+        self.add_orbiting_object(neptune, Planet(), .25 * AU, 30)
+        
+
+
 
     def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
+
         '''helper function to add an object to the map with an orbit'''
+
         if start_angle is None:
             start_angle = random.randint(0, 359)
 
