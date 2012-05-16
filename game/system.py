@@ -1,20 +1,10 @@
-class Orbit(object):
+class DumbMass(object):
     '''
-    Represents an orbit
-    '''
-
-    eccentricity = None
-
-
-class Star(object):
-    '''
-    Represents a star (or black hole)
+    Represents a lump of collectable mass (asteroids, ship wrecks, etc)
     '''
 
-    age = None
     mass = None
-
-    pass
+    orbit = None
 
 
 class Planet(object):
@@ -24,24 +14,34 @@ class Planet(object):
 
     age = None
     mass = None
+    orbit = None
 
-    pass
 
-
-class DumbMass(object):
+class Star(object):
     '''
-    Represents a lump of collectable mass (asteroids, ship wrecks, etc)
+    Represents a star (or black hole)
     '''
 
+    age = None
     mass = None
+    orbit = None
 
-    pass
+
+class Orbit(object):
+    '''
+    Represents an orbit
+    '''
+    
+    period = None  # number of days to complete one orbit
+    parent_object = None  # object the orbit is centered on
 
 
-class SystemMap(object):
+class System(object):
     '''
     Represents a single system
     '''
 
-    def spawn_system(self):
+    objects = []
+
+    def __init__(self):
         pass

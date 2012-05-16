@@ -59,7 +59,7 @@ class GameCore(object):
 
     def _update_widgets(self, interpolation):
         '''Update any widgets'''
-        return
+        self.widgets.update(interpolation)
 
     def run(self):
         while True:

@@ -3,7 +3,9 @@ class GalaxyRenderer(object):
 
 
 class SystemRenderer(object):
-    pass
+    
+    def get_sprites(self, system, extents):
+        pass
 
 
 class ShipRenderer(object):
