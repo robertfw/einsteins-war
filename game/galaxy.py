@@ -5,11 +5,11 @@ class GalaxyMap(object):
 
     systems = None
 
-    def __init__(self, settings):
-        self.spawn_systems(settings)
+    def __init__(self):
+        self.spawn_systems()
 
     def map_gravity(self):
         pass
 
-    def spawn_systems(self, settings):
+    def spawn_systems(self):
         pass

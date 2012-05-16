@@ -4,7 +4,7 @@ import pygame
 class KeyBoardController(object):
     bindings = None
 
-    def __init__(self, bindings):
+    def __init__(self, bindings=None):
         self.bindings = bindings
 
     def set_repeat(self, delay, interval):
