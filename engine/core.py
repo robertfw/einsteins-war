@@ -36,10 +36,19 @@ class GameCore(object):
         self._update(dt)
 
     def _master_draw(self, interpolation):
+        # tell all widgets to update their data
         self._update_widgets(interpolation)
+        
+        # blank the screen
         self.renderer.reset_view()
+
+        #call the game specific draw method
         self._draw(interpolation)
+
+        #draw any widgets
         self.renderer.draw_sprite_map(self.widgets.get_widget_map())
+
+        #update the display
         self.renderer.update()
 
     def _handle_events(self):

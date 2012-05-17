@@ -4,7 +4,7 @@ from engine.utils import quit
 from pygame.locals import K_ESCAPE
 
 from game.system import System
-from game.renderers import render_system
+from game.renderers import get_system_sprites
 
 
 class Game(GameCore):
@@ -14,6 +14,7 @@ class Game(GameCore):
 
         fps_display = TextWidget(binding=lambda: round(self.clock.fps, 2), font_size=20, color=(0, 255, 0))
         ups_display = TextWidget(binding=lambda: round(self.clock.ups, 2), font_size=20, color=(50, 50, 255))
+        
         self.widgets.add_widget('fps_display', fps_display, (20, 20))
         self.widgets.add_widget('ups_display', ups_display, (100, 20))
 
@@ -24,9 +25,10 @@ class Game(GameCore):
         self.system = System()
 
     def _update(self, dt):
-        render_system(self.renderer, self.system)
+        pass
 
     def _draw(self, interpolation):
-        pass
+        system_sprites = get_system_sprites(self.system)
+        self.renderer.draw_sprite_map(system_sprites)
 
 Game().run()
