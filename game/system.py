@@ -25,8 +25,12 @@ class Star(object):
     Represents a star (or black hole)
     '''
 
+    # most characteristics of stars can be derived from their initial mass and their current age
+    # age is in millions of years, initial_mass is in solar masses
     age = None
-    mass = None
+    initial_mass = None
+
+    # if the star is orbiting a barycenter (for example in a binary system etc), it has an orbit
     orbit = None
 
 

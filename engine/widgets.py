@@ -9,17 +9,13 @@ class WidgetHandler(object):
     def get_widget_map(self):
         return self.widgets
 
-    def add_widget(self, name, widget, pos=(0, 0)):
+    #TODO: should return a handler for future reference
+    def add_widget(self, widget, pos=(0, 0)):
         self.widgets[pos] = widget
-        self.widget_map[name] = pos
 
     def update(self, interpolation):
         for pos in self.widgets:
             self.widgets[pos].update_value(interpolation)
-
-    #TODO: see if there is a nicer way to handle this
-    def get_widget(self, name):
-        return self.widgets[self.widget_map[name]]
 
 
 class BaseWidget(Sprite):
