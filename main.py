@@ -27,6 +27,6 @@ class Game(GameCore):
         pass
 
     def _draw(self, interpolation):
-        self.system_window.render(self.renderer)
+        self.system_window.render(self.display)
 
 Game().run()

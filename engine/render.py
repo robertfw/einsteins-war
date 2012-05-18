@@ -28,14 +28,11 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.center = pos
 
 
-class Renderer(object):
+class Display(object):
     window = None
-    fps_clock = None
-    viewport_size = (0, 0)
 
-    def __init__(self, viewport_size):
-        self.viewport_size = viewport_size
-        self.window = pygame.display.set_mode(self.viewport_size)
+    def __init__(self, *args, **kwargs):
+        self.window = pygame.display.set_mode(*args, **kwargs)
 
     def reset_view(self):
         self.window.fill((0, 0, 0))

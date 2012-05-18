@@ -1,7 +1,7 @@
 import pygame
 import sys
 from pygame.locals import KEYDOWN, KEYUP
-from engine.render import Renderer
+from engine.render import Display
 from engine.controls import KeyBoardController
 from engine.widgets import WidgetHandler
 from engine.gameclock import GameClock
@@ -9,10 +9,10 @@ from engine.gameclock import GameClock
 
 class GameCore(object):
 
-    def __init__(self, viewport_size=(800, 600)):
+    def __init__(self, resolution=(800, 600)):
 
         pygame.init()
-        self.renderer = Renderer(viewport_size)
+        self.display = Display(resolution)
 
         self.keyboard_controller = KeyBoardController()
         self.widgets = WidgetHandler()
@@ -40,16 +40,16 @@ class GameCore(object):
         self._update_widgets(interpolation)
         
         # blank the screen
-        self.renderer.reset_view()
+        self.display.reset_view()
 
         #call the game specific draw method
         self._draw(interpolation)
 
         #draw any widgets
-        self.renderer.draw_sprite_map(self.widgets.get_widget_map())
+        self.display.draw_sprite_map(self.widgets.get_widget_map())
 
         #update the display
-        self.renderer.update()
+        self.display.update()
 
     def _handle_events(self):
         for event in pygame.event.get():
