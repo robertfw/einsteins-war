@@ -40,7 +40,7 @@ class Star(object):
         sprite = Sprite()
         surface = Surface((50, 50))
         draw.circle(surface, (255, 0, 0), (25, 25), 25, 0)
-        sprite.set_base_image(surface)
+        sprite.image = surface
 
         return sprite
 
