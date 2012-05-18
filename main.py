@@ -2,8 +2,7 @@ from engine.core import GameCore
 from engine.widgets import TextWidget
 from pygame.locals import K_ESCAPE
 
-from game.system import System
-from game.renderers import get_system_sprites
+from game.system import SystemWindow, System
 from game import commands
 
 
@@ -22,13 +21,12 @@ class Game(GameCore):
             K_ESCAPE: commands.quit
         }
         
-        self.system = System()
+        self.system_window = SystemWindow(System())
 
     def _update(self, dt):
         pass
 
     def _draw(self, interpolation):
-        system_sprites = get_system_sprites(self.system)
-        self.renderer.draw_sprite_map(system_sprites)
+        self.system_window.render(self.renderer)
 
 Game().run()
