@@ -9,8 +9,8 @@ from game.renderers import get_system_sprites
 
 class Game(GameCore):
 
-    def __init__(self):
-        super(Game, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(Game, self).__init__(*args, **kwargs)
 
         fps_display = TextWidget(binding=lambda: round(self.clock.fps, 2), font_size=20, color=(0, 255, 0))
         ups_display = TextWidget(binding=lambda: round(self.clock.ups, 2), font_size=20, color=(50, 50, 255))
