@@ -9,17 +9,18 @@ class Map2D(object):
     def add_object(self, obj, pos):
         self.objects[pos] = obj
 
+    def get_objs_in_rect(self, rect):
+        '''return objects within a given rectangle'''
+        pass
+
 
 class Map2DWindow(object):
     '''A map window displays a map, with ability to pan/zoom'''
     display_size = (None, None)  # size of the displayed map window
 
     _map2d = None  # link to a Map object
-
     _zoom = 0  # zoom, 0% = full map 100% = ?
-
-    center = (0, 0)  # where to center the zoomed view
-    _slice_size = (0, 0)  # size of slice we want
+    _rect = None  # calculated from zoom & map extent, area of map to show
     
     def __init__(self, map2d):
         self._map2d = map2d
