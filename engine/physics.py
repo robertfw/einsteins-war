@@ -1,5 +1,5 @@
 class Map(object):
-	objects = {}
+    objects = {}
 
-	def add_object(self,obj,pos):
-		self.objects[pos] = obj
+    def add_object(self, obj, pos):
+        self.objects[pos] = obj

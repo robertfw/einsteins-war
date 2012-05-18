@@ -1,10 +1,10 @@
 from engine.core import GameCore
 from engine.widgets import TextWidget
-from engine.utils import quit
 from pygame.locals import K_ESCAPE
 
 from game.system import System
 from game.renderers import get_system_sprites
+from game import commands
 
 
 class Game(GameCore):
@@ -19,9 +19,9 @@ class Game(GameCore):
         self.widgets.add_widget(ups_display, (75, 20))
 
         self.keyboard_controller.bindings = {
-            K_ESCAPE: quit
+            K_ESCAPE: commands.quit
         }
-
+        
         self.system = System()
 
     def _update(self, dt):

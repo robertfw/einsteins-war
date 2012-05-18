@@ -52,11 +52,9 @@ class GameCore(object):
         self.renderer.update()
 
     def _handle_events(self):
-
         for event in pygame.event.get():
             if event.type == KEYDOWN or event.type == KEYUP:
-                keystates = pygame.key.get_pressed()
-                self.keyboard_controller.evaluate_keystates(keystates)
+                self.keyboard_controller.evaluate_keystates()
 
     def _update(self, dt):
         '''Update the game state'''
@@ -71,5 +69,6 @@ class GameCore(object):
         self.widgets.update(interpolation)
 
     def run(self):
+        '''Run the game loop'''
         while True:
             self.clock.tick()
