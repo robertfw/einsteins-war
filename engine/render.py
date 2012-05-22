@@ -44,7 +44,7 @@ class WindowManager(object):
 
                 # we need to offset the position of the sprites based on the window position
                 for pos in sprite_map:
-                    new_pos = (pos[0] + window.rect.center[0], pos[1] + window.rect.center[1])
+                    new_pos = (pos[0] + window.rect.centerx, pos[1] + window.rect.centery)
                     full_sprite_map[new_pos] = sprite_map[pos]
         
         self.display.draw_sprite_map(full_sprite_map)
@@ -62,7 +62,7 @@ class Display(object):
         self.window = pygame.display.set_mode(*args, **kwargs)
         
         info = pygame.display.Info()
-        self.resolution = (info.current_h, info.current_w)
+        self.resolution = (info.current_w, info.current_h)
 
     def reset_view(self):
         self.window.fill((0, 0, 0))

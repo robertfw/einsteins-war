@@ -78,10 +78,10 @@ class System(object):
 
     def spawn_objects(self):
         self.map.add_object(Star(), (0, 0))
-        self.map.add_object(Planet(), (125, 125))
-        self.map.add_object(Planet(), (125, -125))
-        self.map.add_object(Planet(), (-125, 125))
-        self.map.add_object(Planet(), (-125, -125))
+        self.map.add_object(Planet(), (100, 50))
+        self.map.add_object(Planet(), (200, -20))
+        self.map.add_object(Planet(), (-40, 100))
+        self.map.add_object(Planet(), (-20, -80))
 
     def get_sprites(self):
         objects = self.get_objects()
