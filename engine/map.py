@@ -1,29 +1,32 @@
+from engine.render import Window
+import sys
+
+
 class Map2D(object):
     '''A map is a representation of objects in a physical space'''
     objects = {}
-    extents = None
+    max_axis = None
 
-    def __init__(self, extents=None):
-        self.extents = None
+    def __init__(self):
+        self.max_axis = sys.maxint
 
     def add_object(self, obj, pos):
         self.objects[pos] = obj
 
-    def get_objs_in_rect(self, rect):
+    def get_objects_in_rect(self, rect):
         '''return objects within a given rectangle'''
         pass
 
 
-class Map2DWindow(object):
+class Map2DWindow(Window):
     '''A map window displays a map, with ability to pan/zoom'''
-    display_size = (None, None)  # size of the displayed map window
-
     _map2d = None  # link to a Map object
     _zoom = 0  # zoom, 0% = full map 100% = ?
     _rect = None  # calculated from zoom & map extent, area of map to show
     
-    def __init__(self, map2d):
-        self._map2d = map2d
+    def __init__(self, *args, **kwargs):
+        self._map2d = kwargs.get('map2d')
+        super(Map2DWindow, self).__init__(*args, **kwargs)
 
     @property
     def zoom(self):

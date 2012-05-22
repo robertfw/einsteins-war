@@ -49,4 +49,4 @@ class TextWidget(BaseWidget):
         self.image = obj.render(str(self.value), True, self.color)
 
     def set_rect_pos(self, pos):
-        self.rect.topleft = pos
+        self.rect.bottomright = pos

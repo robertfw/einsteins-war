@@ -22,6 +22,14 @@ class Planet(object):
     mass = None
     orbit = None
 
+    def get_sprite(self):
+        sprite = Sprite()
+        surface = Surface((25, 25))
+        draw.circle(surface, (0, 255, 0), (12, 12), 12, 0)
+        sprite.image = surface
+
+        return sprite
+
 
 class Star(object):
     '''
@@ -69,8 +77,11 @@ class System(object):
         return self.map.objects
 
     def spawn_objects(self):
-        star = Star()
-        self.map.add_object(star, (200, 200))
+        self.map.add_object(Star(), (0, 0))
+        self.map.add_object(Planet(), (125, 125))
+        self.map.add_object(Planet(), (125, -125))
+        self.map.add_object(Planet(), (-125, 125))
+        self.map.add_object(Planet(), (-125, -125))
 
     def get_sprites(self):
         objects = self.get_objects()
@@ -87,10 +98,12 @@ class SystemWindow(Map2DWindow):
     '''Extends Map2DWindow to display a system'''
     system = None
 
-    def __init__(self, system):
-        super(SystemWindow, self).__init__(system.map)
+    def __init__(self, *args, **kwargs):
+        system = kwargs.get('system')
+
+        kwargs['map2d'] = system.map
+        super(SystemWindow, self).__init__(*args, **kwargs)
         self.system = system
 
-    def render(self, renderer):
-        sprites = self.system.get_sprites()
-        renderer.draw_sprite_map(sprites)
+    def get_sprite_map(self):
+        self.sprites = self.system.get_sprites()

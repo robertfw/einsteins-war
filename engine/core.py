@@ -1,7 +1,7 @@
 import pygame
 import sys
 from pygame.locals import KEYDOWN, KEYUP
-from engine.render import Display
+from engine.render import Display, WindowManager
 from engine.controls import KeyBoardController
 from engine.widgets import WidgetHandler
 from engine.gameclock import GameClock
@@ -16,6 +16,7 @@ class GameCore(object):
 
         self.keyboard_controller = KeyBoardController()
         self.widgets = WidgetHandler()
+        self.windows = WindowManager(display=self.display)
 
         if sys.platform in('win32', 'cygwin'):
             time_source = None
@@ -57,16 +58,20 @@ class GameCore(object):
                 self.keyboard_controller.evaluate_keystates()
 
     def _update(self, dt):
-        '''Update the game state'''
+        '''abstract, Update the game state'''
         return
 
     def _draw(self, interpolation):
-        '''Update the display'''
+        '''abstract, Update the display'''
         return
 
     def _update_widgets(self, interpolation):
         '''Update any widgets'''
         self.widgets.update(interpolation)
+
+    def _update_windows(self, interpolation):
+        '''Update any windows'''
+        self.windows.render(interpolation)
 
     def run(self):
         '''Run the game loop'''
