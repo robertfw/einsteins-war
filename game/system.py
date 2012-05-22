@@ -105,5 +105,5 @@ class SystemWindow(Map2DWindow):
         super(SystemWindow, self).__init__(*args, **kwargs)
         self.system = system
 
-    def get_sprite_map(self):
-        self.sprites = self.system.get_sprites()
+    def get_sprite_map(self, interpolation):
+        return self.system.get_sprites()

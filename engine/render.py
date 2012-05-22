@@ -1,4 +1,5 @@
 import pygame
+from pygame.rect import Rect
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -17,7 +18,12 @@ class Window(object):
     visible = True
 
     def __init__(self, *args, **kwargs):
-        self.rect = kwargs.get('rect')
+        rect = kwargs.get('rect')
+
+        if not isinstance(rect, Rect):
+            rect = Rect(rect)
+
+        self.rect = rect
 
 
 class WindowManager(object):
@@ -38,9 +44,9 @@ class WindowManager(object):
 
                 # we need to offset the position of the sprites based on the window position
                 for pos in sprite_map:
-                    new_pos = pos
+                    new_pos = (pos[0] + window.rect.center[0], pos[1] + window.rect.center[1])
                     full_sprite_map[new_pos] = sprite_map[pos]
-
+        
         self.display.draw_sprite_map(full_sprite_map)
 
     def get_sprite_map(self):

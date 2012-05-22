@@ -43,6 +43,9 @@ class GameCore(object):
         # blank the screen
         self.display.reset_view()
 
+        # tell all windows to render
+        self._update_windows(interpolation)
+
         #call the game specific draw method
         self._draw(interpolation)
 
