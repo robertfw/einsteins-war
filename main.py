@@ -21,7 +21,9 @@ class Game(GameCore):
             K_ESCAPE: commands.quit
         }
 
-        self.windows.add_window(SystemWindow(system=System(), rect=((0, 0), self.display.resolution)))
+        #create a new window, make it the full size of our current display
+        self.system_window = SystemWindow(system=System(), rect=((0, 0), self.display.resolution))
+        self.windows.add_window(self.system_window)
 
     def _update(self, dt):
         pass

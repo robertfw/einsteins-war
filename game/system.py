@@ -73,25 +73,12 @@ class System(object):
         self.map = Map2D()
         self.spawn_objects()
 
-    def get_objects(self):
-        return self.map.objects
-
     def spawn_objects(self):
-        self.map.add_object(Star(), (0, 0))
-        self.map.add_object(Planet(), (100, 50))
-        self.map.add_object(Planet(), (200, -20))
-        self.map.add_object(Planet(), (-40, 100))
-        self.map.add_object(Planet(), (-20, -80))
+        star = Star()
+        self.map.add_object(star, (0, 0))
 
-    def get_sprites(self):
-        objects = self.get_objects()
-        sprites = {}
-        for pos in objects:
-            obj = objects[pos]
-            if callable(obj.get_sprite):
-                sprites[pos] = obj.get_sprite()
-
-        return sprites
+        planet = Planet()
+        self.map.add_object(planet, (100, 50))
 
 
 class SystemWindow(Map2DWindow):
@@ -99,11 +86,16 @@ class SystemWindow(Map2DWindow):
     system = None
 
     def __init__(self, *args, **kwargs):
-        system = kwargs.get('system')
-
-        kwargs['map2d'] = system.map
+        self.system = kwargs.get('system')
+        kwargs['map2d'] = self.system.map
         super(SystemWindow, self).__init__(*args, **kwargs)
-        self.system = system
 
     def get_sprite_map(self, interpolation):
-        return self.system.get_sprites()
+        objects = self.system.map.get_objects_in_rect(self._slice_rect)
+        sprites = {}
+        for pos in objects:
+            obj = objects[pos]
+            if callable(obj.get_sprite):
+                sprites[pos] = obj.get_sprite()
+
+        return sprites

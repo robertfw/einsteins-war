@@ -18,12 +18,7 @@ class Window(object):
     visible = True
 
     def __init__(self, *args, **kwargs):
-        rect = kwargs.get('rect')
-
-        if not isinstance(rect, Rect):
-            rect = Rect(rect)
-
-        self.rect = rect
+        self.rect = Rect(kwargs.get('rect'))
 
 
 class WindowManager(object):
