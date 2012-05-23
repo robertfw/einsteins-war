@@ -26,7 +26,7 @@ class Game(GameCore):
         self.windows.add_window(self.system_window)
 
     def _update(self, dt):
-        pass
+        self.system_window.scale = self.system_window.scale - .01
 
     def _draw(self, interpolation):
         pass

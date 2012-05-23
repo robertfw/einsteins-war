@@ -25,52 +25,55 @@ class Map2D(object):
 
             if x_bound_low and x_bound_high and y_bound_low and y_bound_high:
                 objects[pos] = self.objects[pos]
-            else:
-                pass
-                #print rect
-                #print "{0}, {1}, {2}, {3}".format(x_bound_high, x_bound_low, y_bound_high, y_bound_low)
-                #print '----'
 
         return objects
-
-    def get_extents(self):
-        top, bottom, left, right = None, None, None, None
-
-        for pos in self.objects:
-            if pos[0] < left or left is None:
-                left = pos[0]
-
-            if pos[0] > right or right is None:
-                right = pos[0]
-
-            if pos[1] > top or top is None:
-                top = pos[1]
-
-            if pos[1] < bottom or bottom is None:
-                bottom = pos[1]
-
-        width = right - left
-        height = top - bottom
-
-        extents = Rect((left, top), (width, height))
-        print extents
-
-        return extents
 
 
 class Map2DWindow(Window):
     '''A map window displays a map, with ability to pan/zoom'''
     _map2d = None  # link to a Map object
-    _zoom = 0  # zoom, 0% = full map 100% = ?
-    _slice_rect = None  # calculated from zoom & map extent, area of map to show
+    _scale = 1  # pixels per map unit
+    center = None  # where is the view centered
+    _slice_rect = None  # calculated from scale & center, area of map to show
     
     def __init__(self, *args, **kwargs):
-        #TODO: add some validation checking here
-        self._map2d = kwargs.get('map2d')
-        
-        self._slice_rect = self._map2d.get_extents()
-
         super(Map2DWindow, self).__init__(*args, **kwargs)
 
+        self._map2d = kwargs.get('map2d')
+
+        self.center = (0, 0)
+
+        self._update_slice_rect()
+
+    def _update_slice_rect(self):
+        width = self.rect.width * self._scale
+        height = self.rect.height * self._scale
+
+        top = self.center[1] - (height / 2)
+        left = self.center[0] - (width / 2)
+
+        self._slice_rect = Rect((top, left), (width, height))
+
     def get_objects(self):
-        return self._map2d.get_objects_in_rect(self._slice_rect)
+        raw = self._map2d.get_objects_in_rect(self._slice_rect)
+
+        # we need to convert the map co-ordinates to window co-ordinates
+        objects = {}
+        for pos in raw:
+            #account for scale
+            new_x = pos[0] * self._scale
+            new_y = pos[1] * self._scale
+            new_pos = (new_x, new_y)
+
+            objects[new_pos] = raw[pos]
+
+        return objects
+
+    @property
+    def scale(self):
+        return self._scale
+
+    @scale.setter
+    def scale(self, value):
+        self._scale = value
+        self._update_slice_rect()

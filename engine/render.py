@@ -32,17 +32,25 @@ class WindowManager(object):
         self.windows.append(window)
 
     def render(self, interpolation):
-        full_sprite_map = {}
+        offset_layers = []
+
         for window in self.windows:
             if window.visible:
-                sprite_map = window.get_sprite_map(interpolation=interpolation)
+                layers = window.get_sprite_map(interpolation=interpolation)
 
-                # we need to offset the position of the sprites based on the window position
-                for pos in sprite_map:
-                    new_pos = (pos[0] + window.rect.centerx, pos[1] + window.rect.centery)
-                    full_sprite_map[new_pos] = sprite_map[pos]
+                if type(layers).__name__ != 'list':
+                    layers = [layers]
+
+                for layer in layers:
+                    offset_layer = {}
+                    # we need to offset the position of the sprites based on the window position
+                    for pos in layer:
+                        new_pos = (pos[0] + window.rect.centerx, pos[1] + window.rect.centery)
+                        offset_layer[new_pos] = layer[pos]
+
+                    offset_layers.append(offset_layer)
         
-        self.display.draw_sprite_map(full_sprite_map)
+        self.display.draw_sprite_map(offset_layers)
 
     def get_sprite_map(self):
         '''abstract, should return a map of sprites, keyed by position'''
@@ -65,10 +73,15 @@ class Display(object):
     def update(self):
         pygame.display.update()
 
-    def draw_sprite_map(self, sprites):
-        for pos in sprites:
-            sprite = sprites[pos]
-            sprite.update()
-            if sprite.image is not None and sprite.rect is not None:
-                sprite.set_rect_pos(pos)
-                self.window.blit(sprite.image, sprite.rect)
+    def draw_sprite_map(self, layers):
+        #TODO: not wild about this
+        if type(layers).__name__ != 'list':
+            layers = [layers]
+        
+        for sprites in layers:
+            for pos in sprites:
+                sprite = sprites[pos]
+                sprite.update()
+                if sprite.image is not None and sprite.rect is not None:
+                    sprite.set_rect_pos(pos)
+                    self.window.blit(sprite.image, sprite.rect)

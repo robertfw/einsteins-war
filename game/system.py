@@ -10,7 +10,6 @@ class DumbMass(object):
     '''
 
     mass = None
-    orbit = None
 
 
 class Planet(object):
@@ -18,9 +17,7 @@ class Planet(object):
     Represents a planet
     '''
 
-    age = None
     mass = None
-    orbit = None
 
     def get_sprite(self):
         sprite = Sprite()
@@ -41,9 +38,6 @@ class Star(object):
     age = None
     initial_mass = None
 
-    # if the star is orbiting a barycenter (for example in a binary system etc), it has an orbit
-    orbit = None
-
     def get_sprite(self):
         sprite = Sprite()
         surface = Surface((50, 50))
@@ -59,7 +53,8 @@ class Orbit(object):
     '''
 
     period = None  # number of days to complete one orbit
-    parent_object = None  # object the orbit is centered on
+    parent = None  # object the orbit is centered on
+    child = None  # the orbiting object
 
 
 class System(object):
@@ -68,19 +63,61 @@ class System(object):
     '''
 
     map = None
+    orbits = []
 
     def __init__(self):
         self.map = Map2D()
         self.spawn_objects()
 
     def spawn_objects(self):
-        star = Star()
-        self.map.add_object(star, (0, 0))
+        sol = Star()
+        self.map.add_object(sol, (0, 0))
 
-        planet = Planet()
+        #TODO: put this in a more accessible place
+        #AU = 149598000000  # 1 AU in meters
+        AU = 100
         
-        #1 AU out
-        self.map.add_object(planet, (149598000000, 149598000000))
+        #Mercury
+        mercury = Planet()
+        self.add_orbiting_object(sol, mercury, .46 * AU, 87)
+
+        #Venus
+        venus = Planet()
+        self.add_orbiting_object(sol, venus, .7 * AU, 224)
+
+        #Earth
+        earth = Planet()
+        self.add_orbiting_object(sol, earth, 1 * AU, 365)
+
+        #Mars
+        mars = Planet()
+        self.add_orbiting_object(sol, mars, 1.6 * AU, 686)
+
+        #Jupiter
+        jupiter = Planet()
+        self.add_orbiting_object(sol, jupiter, 5.2 * AU, 4332)
+
+        #Saturn
+        saturn = Planet()
+        self.add_orbiting_object(sol, saturn, 10 * AU, 10759)
+
+        #Uranus
+        uranus = Planet()
+        self.add_orbiting_object(sol, uranus, 19 * AU, 30799)
+
+        #Neptune
+        neptune = Planet()
+        self.add_orbiting_object(sol, neptune, 30 * AU, 60190)
+
+    def add_orbiting_object(self, parent, child, distance, period):
+        '''helper function to add an object to the map with an orbit'''
+        orbit = Orbit()
+        orbit.parent = parent
+        orbit.child = child
+        orbit.period = period
+
+        self.orbits.append(orbit)
+        self.map.add_object(child, (distance, distance))
 
 
 class SystemWindow(Map2DWindow):
@@ -94,10 +131,16 @@ class SystemWindow(Map2DWindow):
 
     def get_sprite_map(self, interpolation):
         objects = self.get_objects()
-        sprites = {}
+        
+        #TODO: this should probably use pygames layering stuff
+        layers = [{}, {}]
+
         for pos in objects:
             obj = objects[pos]
-            if callable(obj.get_sprite):
-                sprites[pos] = obj.get_sprite()
+            
+            if isinstance(obj, Star):
+                layers[1][pos] = obj.get_sprite()
+            elif isinstance(obj, Planet):
+                layers[0][pos] = obj.get_sprite()
         
-        return sprites
+        return layers
