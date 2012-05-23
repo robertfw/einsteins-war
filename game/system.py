@@ -78,7 +78,9 @@ class System(object):
         self.map.add_object(star, (0, 0))
 
         planet = Planet()
-        self.map.add_object(planet, (100, 50))
+        
+        #1 AU out
+        self.map.add_object(planet, (149598000000, 149598000000))
 
 
 class SystemWindow(Map2DWindow):
@@ -91,11 +93,11 @@ class SystemWindow(Map2DWindow):
         super(SystemWindow, self).__init__(*args, **kwargs)
 
     def get_sprite_map(self, interpolation):
-        objects = self.system.map.get_objects_in_rect(self._slice_rect)
+        objects = self.get_objects()
         sprites = {}
         for pos in objects:
             obj = objects[pos]
             if callable(obj.get_sprite):
                 sprites[pos] = obj.get_sprite()
-
+        
         return sprites
