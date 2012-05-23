@@ -63,8 +63,12 @@ class Map2DWindow(Window):
             #account for scale
             new_x = pos[0] * self._scale
             new_y = pos[1] * self._scale
+            
+            #account for center offset
+            new_x = new_x + self.rect.centerx
+            new_y = new_y + self.rect.centery
+            
             new_pos = (new_x, new_y)
-
             objects[new_pos] = raw[pos]
 
         return objects
@@ -75,5 +79,8 @@ class Map2DWindow(Window):
 
     @scale.setter
     def scale(self, value):
+        if value <= 0:
+            raise ValueError('Scale must be > 0')
+
         self._scale = value
         self._update_slice_rect()

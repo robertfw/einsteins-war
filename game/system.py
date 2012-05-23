@@ -70,13 +70,14 @@ class System(object):
         self.spawn_objects()
 
     def spawn_objects(self):
+        #TODO: put this in a more accessible place
+        #AU = 149598000000  # 1 AU in meters
+        AU = 200
+        
+        #TODO: these should not be here
         sol = Star()
         self.map.add_object(sol, (0, 0))
 
-        #TODO: put this in a more accessible place
-        #AU = 149598000000  # 1 AU in meters
-        AU = 100
-        
         #Mercury
         mercury = Planet()
         self.add_orbiting_object(sol, mercury, .46 * AU, 87)
@@ -132,9 +133,7 @@ class SystemWindow(Map2DWindow):
     def get_sprite_map(self, interpolation):
         objects = self.get_objects()
         
-        #TODO: this should probably use pygames layering stuff
         layers = [{}, {}]
-
         for pos in objects:
             obj = objects[pos]
             

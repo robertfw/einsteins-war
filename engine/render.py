@@ -23,38 +23,17 @@ class Window(object):
 
 class WindowManager(object):
     windows = []
-    display = None
-
-    def __init__(self, display):
-        self.display = display
 
     def add_window(self, window):
         self.windows.append(window)
 
-    def render(self, interpolation):
-        offset_layers = []
+    def get_window_layers(self, interpolation):
+        window_layers = []
 
-        for window in self.windows:
-            if window.visible:
-                layers = window.get_sprite_map(interpolation=interpolation)
+        generator = (window.get_sprite_map(interpolation=interpolation) for window in self.windows if window.visible)
+        map(lambda layer: window_layers.append(layer), generator)
 
-                if type(layers).__name__ != 'list':
-                    layers = [layers]
-
-                for layer in layers:
-                    offset_layer = {}
-                    # we need to offset the position of the sprites based on the window position
-                    for pos in layer:
-                        new_pos = (pos[0] + window.rect.centerx, pos[1] + window.rect.centery)
-                        offset_layer[new_pos] = layer[pos]
-
-                    offset_layers.append(offset_layer)
-        
-        self.display.draw_sprite_map(offset_layers)
-
-    def get_sprite_map(self):
-        '''abstract, should return a map of sprites, keyed by position'''
-        pass
+        return window_layers
 
 
 class Display(object):

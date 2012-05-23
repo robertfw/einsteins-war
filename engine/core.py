@@ -8,15 +8,21 @@ from engine.gameclock import GameClock
 
 
 class GameCore(object):
+    display = None
+    keyboard = None
+    widgets = None
+    windows = None
+    clock = None
+    update_callbacks = []
 
     def __init__(self, resolution=(800, 600)):
 
         pygame.init()
+        
         self.display = Display(resolution)
-
-        self.keyboard_controller = KeyBoardController()
+        self.keyboard = KeyBoardController()
         self.widgets = WidgetHandler()
-        self.windows = WindowManager(display=self.display)
+        self.windows = WindowManager()
 
         if sys.platform in('win32', 'cygwin'):
             time_source = None
@@ -26,30 +32,32 @@ class GameCore(object):
         self.clock = GameClock(max_ups=30,
                   max_fps=0,
                   use_wait=False,
-                  update_callback=self._master_update,
-                  frame_callback=self._master_draw,
+                  update_callback=self._update,
+                  frame_callback=self._draw,
                   paused_callback=None,
                   time_source=time_source
                   )
 
-    def _master_update(self, dt):
-        self._handle_events()
-        self._update(dt)
+    def register_update_callback(self, callback):
+        self.update_callbacks.append(callback)
 
-    def _master_draw(self, interpolation):
-        # tell all widgets to update their data
-        self._update_widgets(interpolation)
-        
+    def _update(self, dt):
+        self._handle_events()
+
+        for callback in self.update_callbacks:
+            callback(dt)
+
+    def _draw(self, interpolation):
         # blank the screen
         self.display.reset_view()
 
         # tell all windows to render
-        self._update_windows(interpolation)
-
-        #call the game specific draw method
-        self._draw(interpolation)
+        window_layers = self.windows.get_window_layers(interpolation)
+        for layer in window_layers:
+            self.display.draw_sprite_map(layer)
 
         #draw any widgets
+        self.widgets.update(interpolation)
         self.display.draw_sprite_map(self.widgets.get_widget_map())
 
         #update the display
@@ -58,23 +66,7 @@ class GameCore(object):
     def _handle_events(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN or event.type == KEYUP:
-                self.keyboard_controller.evaluate_keystates()
-
-    def _update(self, dt):
-        '''abstract, Update the game state'''
-        return
-
-    def _draw(self, interpolation):
-        '''abstract, Update the display'''
-        return
-
-    def _update_widgets(self, interpolation):
-        '''Update any widgets'''
-        self.widgets.update(interpolation)
-
-    def _update_windows(self, interpolation):
-        '''Update any windows'''
-        self.windows.render(interpolation)
+                self.keyboard.evaluate_keystates()
 
     def run(self):
         '''Run the game loop'''

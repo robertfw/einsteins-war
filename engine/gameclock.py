@@ -128,6 +128,7 @@ import time
 class _IntervalItem(object):
     """An interval item runs after an elapsed interval."""
     __slots__ = ['func', 'interval', 'lasttime', 'life', 'args']
+
     def __init__(self, func, interval, curtime, life, args):
         self.func = func
         self.interval = float(interval)
@@ -194,6 +195,7 @@ class GameClock(object):
     @property
     def max_ups(self):
         return self._max_ups
+
     @max_ups.setter
     def max_ups(self, val):
         self._max_ups = val
@@ -202,16 +204,18 @@ class GameClock(object):
     @property
     def max_fps(self):
         return self._max_fps
+
     @max_fps.setter
     def max_fps(self, val):
         self._max_fps = val
-        self._frame_interval = 1.0 / val if val>0 else 0
+        self._frame_interval = 1.0 / val if val > 0 else 0
     
     @property
     def game_time(self):
         """Virtual elapsed time in game milliseconds.
         """
         return self._game_time
+
     @property
     def paused(self):
         """The real time at which the clock was paused, or zero if the clock
@@ -338,8 +342,7 @@ class GameClock(object):
             
         """
         self.unschedule(func)
-        item = _IntervalItem(
-            func, interval, self.get_ticks(), life, [interval]+list(args))
+        item = _IntervalItem(func, interval, self.get_ticks(), life, [interval] + list(args))
         self._schedules.append(item)
         self._need_sort = True
     
