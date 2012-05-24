@@ -38,16 +38,16 @@ class Game(GameCore):
             self.system_window.scale = self.system_window.scale / 1.1
 
         def pan_up():
-            self.system_window.center = (self.system_window.center[0], self.system_window.center[1] - 1)
+            self.system_window.center = (self.system_window.center[0], self.system_window.center[1] + 10)
 
         def pan_down():
-            self.system_window.center = (self.system_window.center[0], self.system_window.center[1] + 1)
+            self.system_window.center = (self.system_window.center[0], self.system_window.center[1] - 10)
 
         def pan_left():
-            self.system_window.center = (self.system_window.center[0] - 1, self.system_window.center[1])
+            self.system_window.center = (self.system_window.center[0] + 10, self.system_window.center[1])
 
         def pan_right():
-            self.system_window.center = (self.system_window.center[0] + 1, self.system_window.center[1])
+            self.system_window.center = (self.system_window.center[0] - 10, self.system_window.center[1])
 
         self.keyboard.set_repeat(100, 100)
         self.keyboard.bindings[K_KP_PLUS] = zoom_in
