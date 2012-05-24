@@ -5,6 +5,7 @@ from pygame.surface import Surface
 import random
 import math
 
+
 class DumbMass(object):
     '''
     Represents a lump of collectable mass (asteroids, ship wrecks, etc)

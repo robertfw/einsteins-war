@@ -33,7 +33,7 @@ class Map2DWindow(Window):
     '''A map window displays a map, with ability to pan/zoom'''
     _map2d = None  # link to a Map object
     _scale = 1  # pixels per map unit
-    center = None  # where is the view centered
+    _center = None  # where is the view centered
     _slice_rect = None  # calculated from scale & center, area of map to show
     
     def __init__(self, *args, **kwargs):
@@ -49,12 +49,10 @@ class Map2DWindow(Window):
         width = self.rect.width * (1 / self._scale)
         height = self.rect.height * (1 / self._scale)
 
-        top = self.center[1] - (height / 2)
-        left = self.center[0] - (width / 2)
+        top = self._center[1] - (height / 2)
+        left = self._center[0] - (width / 2)
 
-        print '({0}, {1}) ({2}, {3})'.format(top, left, width, height)
         self._slice_rect = Rect((top, left), (width, height))
-
         print self._slice_rect
 
     def get_objects(self):
@@ -67,7 +65,11 @@ class Map2DWindow(Window):
             new_x = pos[0] * self._scale
             new_y = pos[1] * self._scale
             
-            #account for center offset
+            #account for slice center offset
+            new_x = new_x + self._center[0]
+            new_y = new_y + self._center[1]
+
+            #account for window center offset
             new_x = new_x + self.rect.centerx
             new_y = new_y + self.rect.centery
             
@@ -86,4 +88,13 @@ class Map2DWindow(Window):
             raise ValueError('Scale must be > 0')
 
         self._scale = value
+        self._update_slice_rect()
+
+    @property
+    def center(self):
+        return self._center
+
+    @center.setter
+    def center(self, value):
+        self._center = value
         self._update_slice_rect()
