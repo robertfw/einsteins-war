@@ -23,6 +23,7 @@ class Planet(object):
     def get_sprite(self):
         sprite = Sprite()
         surface = Surface((25, 25))
+        surface.set_colorkey((0, 0, 0))
         draw.circle(surface, (0, 255, 0), (12, 12), 12, 0)
         sprite.image = surface
 
@@ -42,6 +43,7 @@ class Star(object):
     def get_sprite(self):
         sprite = Sprite()
         surface = Surface((50, 50))
+        surface.set_colorkey((0, 0, 0))
         draw.circle(surface, (255, 0, 0), (25, 25), 25, 0)
         sprite.image = surface
 
