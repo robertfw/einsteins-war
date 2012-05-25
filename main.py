@@ -1,7 +1,7 @@
 from __future__ import division
 from engine.core import GameCore
 from engine.widgets import TextWidget
-from pygame.locals import K_ESCAPE, K_KP_PLUS, K_KP_MINUS, K_UP, K_DOWN, K_LEFT, K_RIGHT
+from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e
 
 from game.system import SystemWindow, System
 from game import commands
@@ -50,12 +50,12 @@ class Game(GameCore):
             self.system_window.center = (self.system_window.center[0] - 10, self.system_window.center[1])
 
         self.keyboard.set_repeat(100, 100)
-        self.keyboard.bindings[K_KP_PLUS] = zoom_in
-        self.keyboard.bindings[K_KP_MINUS] = zoom_out
-        self.keyboard.bindings[K_UP] = pan_up
-        self.keyboard.bindings[K_DOWN] = pan_down
-        self.keyboard.bindings[K_LEFT] = pan_left
-        self.keyboard.bindings[K_RIGHT] = pan_right
+        self.keyboard.bindings[K_e] = zoom_in
+        self.keyboard.bindings[K_q] = zoom_out
+        self.keyboard.bindings[K_w] = pan_up
+        self.keyboard.bindings[K_s] = pan_down
+        self.keyboard.bindings[K_a] = pan_left
+        self.keyboard.bindings[K_d] = pan_right
 
 
 Game(resolution=(800, 600)).run()

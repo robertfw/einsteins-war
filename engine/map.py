@@ -49,6 +49,12 @@ class Map2DWindow(Window):
         width = self.rect.width * (1 / self._scale)
         height = self.rect.height * (1 / self._scale)
 
+        if width < self.rect.width:
+            width = self.rect.width
+
+        if height < self.rect.height:
+            height = self.rect.height
+
         top = self._center[1] - (height / 2)
         left = self._center[0] - (width / 2)
 
@@ -75,7 +81,7 @@ class Map2DWindow(Window):
             
             new_pos = (new_x, new_y)
             objects[new_pos] = raw[pos]
-
+        
         return objects
 
     @property
