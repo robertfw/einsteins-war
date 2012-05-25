@@ -18,6 +18,10 @@ class Game(GameCore):
         self.widgets.add_widget(fps_display, (800, 600))
         self.widgets.add_widget(ups_display, (800, 585))
 
+        #setup our keyboard controller
+        self.keyboard.set_repeat(100, 100)
+
+        #any global keybinds go here (for now)
         self.keyboard.bindings = {
             K_ESCAPE: commands.quit
         }
@@ -34,7 +38,6 @@ class Game(GameCore):
         self.widgets.add_widget(scale_display, (800, 570))
 
         #add some keybinds for moving/zooming
-        self.keyboard.set_repeat(100, 100)
         self.keyboard.bindings[K_e] = lambda: self.system_window.zoom_in(1.1)
         self.keyboard.bindings[K_q] = lambda: self.system_window.zoom_out(1.1)
         self.keyboard.bindings[K_w] = lambda: self.system_window.pan((0, 10))
