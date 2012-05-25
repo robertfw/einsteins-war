@@ -104,3 +104,12 @@ class Map2DWindow(Window):
     def center(self, value):
         self._center = value
         self._update_slice_rect()
+
+    def pan(self, amount):
+        self.center = (self.center[0] + amount[0], self.center[1] + amount[1])
+
+    def zoom_in(self, amount):
+        self.scale = self.scale * amount
+
+    def zoom_out(self, amount):
+        self.scale = self.scale / amount

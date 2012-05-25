@@ -28,34 +28,19 @@ class Game(GameCore):
         #create a new window, make it the full size of our current display
         self.system_window = SystemWindow(system=System(), rect=((0, 0), self.display.resolution))
         self.windows.add_window(self.system_window)
+
+        #add a widget to show our current scale
         scale_display = TextWidget(binding=lambda: self.system_window.scale, font_size=20, color=(50, 255, 255))
         self.widgets.add_widget(scale_display, (800, 570))
 
-        def zoom_in():
-            self.system_window.scale = self.system_window.scale * 1.1
-
-        def zoom_out():
-            self.system_window.scale = self.system_window.scale / 1.1
-
-        def pan_up():
-            self.system_window.center = (self.system_window.center[0], self.system_window.center[1] + 10)
-
-        def pan_down():
-            self.system_window.center = (self.system_window.center[0], self.system_window.center[1] - 10)
-
-        def pan_left():
-            self.system_window.center = (self.system_window.center[0] + 10, self.system_window.center[1])
-
-        def pan_right():
-            self.system_window.center = (self.system_window.center[0] - 10, self.system_window.center[1])
-
+        #add some keybinds for moving/zooming
         self.keyboard.set_repeat(100, 100)
-        self.keyboard.bindings[K_e] = zoom_in
-        self.keyboard.bindings[K_q] = zoom_out
-        self.keyboard.bindings[K_w] = pan_up
-        self.keyboard.bindings[K_s] = pan_down
-        self.keyboard.bindings[K_a] = pan_left
-        self.keyboard.bindings[K_d] = pan_right
+        self.keyboard.bindings[K_e] = lambda: self.system_window.zoom_in(1.1)
+        self.keyboard.bindings[K_q] = lambda: self.system_window.zoom_out(1.1)
+        self.keyboard.bindings[K_w] = lambda: self.system_window.pan((0, 10))
+        self.keyboard.bindings[K_s] = lambda: self.system_window.pan((0, -10))
+        self.keyboard.bindings[K_a] = lambda: self.system_window.pan((10, 0))
+        self.keyboard.bindings[K_d] = lambda: self.system_window.pan((-10, 0))
 
 
 Game(resolution=(800, 600)).run()
