@@ -1,3 +1,4 @@
+from __future__ import division
 from engine.map import Map2D, Map2DWindow
 from engine.render import Sprite
 from pygame import draw
@@ -58,7 +59,36 @@ class Orbit(object):
 
     period = None  # number of days to complete one orbit
     parent = None  # object the orbit is centered on
+    radius = None  # radius of the orbit
     child = None  # the orbiting object
+    _cur_angle = None  # radius of the orbit in degrees
+    _angular_velocity = None  # how many degrees to move per tick
+
+    def __init__(self, parent, child, period, radius, angle):
+        self.parent = parent
+        self.child = child
+        self.period = period
+        self.radius = radius
+        self._cur_angle = angle
+
+        # determine our angular velocity, in degrees per second
+        #self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
+
+        #temporary override so this stuff is visible instead of real time
+        self._angular_velocity = 360 / 5
+
+    def update_position(self, dt):
+        self._cur_angle += self._angular_velocity * dt
+
+        if self._cur_angle > 360:
+            self._cur_angle -= 360
+
+        print self._cur_angle
+
+        x = math.sin(self._cur_angle) * self.radius
+        y = math.cos(self._cur_angle) * self.radius
+
+        return (x, y)
 
 
 class System(object):
@@ -117,21 +147,22 @@ class System(object):
 
     def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
         '''helper function to add an object to the map with an orbit'''
-        orbit = Orbit()
-        orbit.parent = parent
-        orbit.child = child
-        orbit.period = period
-
         if start_angle is None:
             start_angle = random.randint(0, 359)
 
         start_angle = math.radians(start_angle)
 
-        x = math.sin(start_angle) * distance
-        y = math.cos(start_angle) * distance
+        orbit = Orbit(parent=parent, child=child, period=period, angle=start_angle, radius=distance)
+
+        position = orbit.update_position(0)
 
         self.orbits.append(orbit)
-        self.map.add_object(child, (x, y))
+        self.map.add_object(child, position)
+
+    def update_orbits(self, dt):
+        for orbit in self.orbits:
+            position = orbit.update_position(dt)
+            self.map.move_object(orbit.child, position)
 
 
 class SystemWindow(Map2DWindow):

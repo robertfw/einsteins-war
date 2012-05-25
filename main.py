@@ -37,6 +37,8 @@ class Game(GameCore):
         scale_display = TextWidget(binding=lambda: self.system_window.scale, font_size=20, color=(50, 255, 255))
         self.widgets.add_widget(scale_display, (800, 570))
 
+        self.register_update_callback(self.system_window.system.update_orbits)
+
         #add some keybinds for moving/zooming
         pan_speed = 10
         zoom_speed = 1.1

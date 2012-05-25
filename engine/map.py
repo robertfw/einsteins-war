@@ -7,12 +7,23 @@ class Map2D(object):
     '''A map is a representation of objects in a physical space'''
     objects = {}
     max_axis = None
+    _map = {}
 
     def __init__(self):
         self.max_axis = sys.maxint
 
     def add_object(self, obj, pos):
+        key = id(obj)
         self.objects[pos] = obj
+        self._map[key] = pos
+
+    def move_object(self, obj, new_pos):
+        key = id(obj)
+        old_pos = self._map[key]
+
+        obj = self.objects[old_pos]
+        self.objects[old_pos] = None
+        self.objects[new_pos] = obj
 
     def get_objects_in_rect(self, rect):
         '''return objects within a given rectangle'''
@@ -59,7 +70,6 @@ class Map2DWindow(Window):
         left = self._center[0] - (width / 2)
 
         self._slice_rect = Rect((top, left), (width, height))
-        print self._slice_rect
 
     def get_objects(self):
         raw = self._map2d.get_objects_in_rect(self._slice_rect)
