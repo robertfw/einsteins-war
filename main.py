@@ -38,12 +38,15 @@ class Game(GameCore):
         self.widgets.add_widget(scale_display, (800, 570))
 
         #add some keybinds for moving/zooming
-        self.keyboard.bindings[K_e] = lambda: self.system_window.zoom_in(1.1)
-        self.keyboard.bindings[K_q] = lambda: self.system_window.zoom_out(1.1)
-        self.keyboard.bindings[K_w] = lambda: self.system_window.pan((0, 10))
-        self.keyboard.bindings[K_s] = lambda: self.system_window.pan((0, -10))
-        self.keyboard.bindings[K_a] = lambda: self.system_window.pan((10, 0))
-        self.keyboard.bindings[K_d] = lambda: self.system_window.pan((-10, 0))
+        pan_speed = 10
+        zoom_speed = 1.1
+        
+        self.keyboard.bindings[K_e] = lambda: self.system_window.zoom_in(zoom_speed)
+        self.keyboard.bindings[K_q] = lambda: self.system_window.zoom_out(zoom_speed)
+        self.keyboard.bindings[K_w] = lambda: self.system_window.pan((0, pan_speed))
+        self.keyboard.bindings[K_s] = lambda: self.system_window.pan((0, -pan_speed))
+        self.keyboard.bindings[K_a] = lambda: self.system_window.pan((pan_speed, 0))
+        self.keyboard.bindings[K_d] = lambda: self.system_window.pan((-pan_speed, 0))
 
 
 Game(resolution=(800, 600)).run()
