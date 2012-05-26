@@ -16,9 +16,9 @@ class Map2D(object):
         key = id(obj)
         self.objects[pos] = obj
         self._map[key] = pos
+        return key
 
-    def move_object(self, obj, new_pos):
-        key = id(obj)
+    def move_object(self, key, new_pos):
         old_pos = self._map[key]
 
         obj = self.objects[old_pos]

@@ -75,7 +75,7 @@ class Orbit(object):
         #self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
 
         #temporary override so this stuff is visible instead of real time
-        self._angular_velocity = 360 / 5
+        self._angular_velocity = 1
 
     def update_position(self, dt):
         self._cur_angle += self._angular_velocity * dt
@@ -83,10 +83,10 @@ class Orbit(object):
         if self._cur_angle > 360:
             self._cur_angle -= 360
 
-        print self._cur_angle
-
         x = math.sin(self._cur_angle) * self.radius
         y = math.cos(self._cur_angle) * self.radius
+
+        print (x, y)
 
         return (x, y)
 
@@ -114,36 +114,36 @@ class System(object):
         self.map.add_object(sol, (0, 0))
 
         #Mercury
-        mercury = Planet()
-        self.add_orbiting_object(sol, mercury, .46 * AU, 87)
+        #mercury = Planet()
+        #self.add_orbiting_object(sol, mercury, .46 * AU, 87)
 
         #Venus
-        venus = Planet()
-        self.add_orbiting_object(sol, venus, .7 * AU, 224)
+        #venus = Planet()
+        #self.add_orbiting_object(sol, venus, .7 * AU, 224)
 
         #Earth
         earth = Planet()
-        self.add_orbiting_object(sol, earth, 1 * AU, 365)
+        self.earth_key = self.add_orbiting_object(sol, earth, 1 * AU, 365)
 
         #Mars
-        mars = Planet()
-        self.add_orbiting_object(sol, mars, 1.6 * AU, 686)
+        #mars = Planet()
+        #self.add_orbiting_object(sol, mars, 1.6 * AU, 686)
 
         #Jupiter
-        jupiter = Planet()
-        self.add_orbiting_object(sol, jupiter, 5.2 * AU, 4332)
+        #jupiter = Planet()
+        #self.add_orbiting_object(sol, jupiter, 5.2 * AU, 4332)
 
         #Saturn
-        saturn = Planet()
-        self.add_orbiting_object(sol, saturn, 10 * AU, 10759)
+        #saturn = Planet()
+        #self.add_orbiting_object(sol, saturn, 10 * AU, 10759)
 
         #Uranus
-        uranus = Planet()
-        self.add_orbiting_object(sol, uranus, 19 * AU, 30799)
+        #uranus = Planet()
+        #self.add_orbiting_object(sol, uranus, 19 * AU, 30799)
 
         #Neptune
-        neptune = Planet()
-        self.add_orbiting_object(sol, neptune, 30 * AU, 60190)
+        #neptune = Planet()
+        #self.add_orbiting_object(sol, neptune, 30 * AU, 60190)
 
     def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
         '''helper function to add an object to the map with an orbit'''
@@ -157,12 +157,12 @@ class System(object):
         position = orbit.update_position(0)
 
         self.orbits.append(orbit)
-        self.map.add_object(child, position)
+        return self.map.add_object(child, position)
 
     def update_orbits(self, dt):
         for orbit in self.orbits:
             position = orbit.update_position(dt)
-            self.map.move_object(orbit.child, position)
+            self.map.move_object(self.earth_key, position)
 
 
 class SystemWindow(Map2DWindow):
