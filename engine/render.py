@@ -3,6 +3,7 @@ from pygame.rect import Rect
 
 
 class Sprite(pygame.sprite.Sprite):
+    layer = 0
     
     def update(self):
         self.rect = self.image.get_rect()

@@ -217,16 +217,23 @@ class SystemWindow(Map2DWindow):
 
         #TODO: implement orbit interpolation
         
-        #TODO: this layering logic shouldn't be hardcoded
-        layers = [{}, {}, {}]
+        layers = []
         for pos in self.viewable_objects:
             obj = self.viewable_objects[pos]
                         
-            if isinstance(obj, Star):
-                layers[0][pos] = obj.get_sprite()
-            elif isinstance(obj, Planet):
-                layers[1][pos] = obj.get_sprite()
-            elif isinstance(obj, Moon):
-                layers[2][pos] = obj.get_sprite()
+            #ask for forgiveness, not for permission! it's faster...
+            try:
+                sprite = obj.get_sprite()
+                layers[sprite.layer][pos] = sprite
+            except IndexError:
+                #thrown when we don't have that layer yet
+                #we need to fill in any layers behind us
+                for i in range(len(layers), sprite.layer + 1):
+                    layers.append({})
+
+                layers[sprite.layer][pos] = sprite
+            except AttributeError:
+                # thrown when the object doesn't have a sprite. don't draw it
+                pass
         
         return layers
