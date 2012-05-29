@@ -99,6 +99,10 @@ class Orbit(object):
         self._angular_velocity = 360 / (self.period)
 
     #TODO: i am not wild about having to pass the map in
+    #but we need to find out the parent position to set the center
+    #possible to move the offsetting to the system.update_orbits method
+    #and treat this method as relative to the parent body
+    #which could make sense if we use a relative positioning system
     def update_position(self, dt, map2d):
         self._cur_angle += self._angular_velocity * dt
 
@@ -221,22 +225,24 @@ class SystemWindow(Map2DWindow):
             #we're not interpolating - get fresh objects
             self.viewable_objects = self.get_objects()
         else:
-            pass  # TODO: implement orbit interpolation
+            pass  # TODO: implement orbit display interpolation
         
         layers = []
         for pos in self.viewable_objects:
             obj = self.viewable_objects[pos]
                         
-            #ask for forgiveness, not for permission! it's faster...
+            #ask for forgiveness, not for permission
             try:
                 sprite = obj.get_sprite(self.scale)
+
+                #TODO: find a way to not have to repeat this line in the except IndexError block
                 layers[sprite.layer][pos] = sprite
             except IndexError:
                 #thrown when we don't have that layer yet
                 #we need to fill in any layers behind us
                 for i in range(len(layers), sprite.layer + 1):
                     layers.append({})
-
+                
                 layers[sprite.layer][pos] = sprite
             except AttributeError:
                 # thrown when the object doesn't have a sprite. don't draw it

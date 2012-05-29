@@ -52,9 +52,8 @@ class GameCore(object):
         self.display.reset_view()
 
         # tell all windows to render
-        window_layers = self.windows.get_window_layers(interpolation)
-        for layer in window_layers:
-            self.display.draw_sprite_map(layer)
+        #TODO: should we denote that get_window_layers returns a generator?
+        map(lambda layer: self.display.draw_sprite_map(layer), self.windows.get_window_layers(interpolation))
 
         #draw any widgets
         self.widgets.update(interpolation)

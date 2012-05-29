@@ -1,49 +1,41 @@
 from engine.render import Window
 from pygame.rect import Rect
-import sys
 
 
 class Map2D(object):
     '''A map is a representation of objects in a physical space'''
-    objects = {}
-    max_axis = None
     _map = {}
-    _counter = 0
-
-    def __init__(self):
-        self.max_axis = sys.maxint
-        print self.max_axis
+    _pos_index = {}
+    _obj_cache = {}
 
     def add_object(self, obj, pos):
         key = id(obj)
-        self.objects[pos] = obj
-        self._map[key] = pos
+        self._obj_cache[key] = obj
+        self._map[pos] = key
+        self._pos_index[key] = pos
         return key
 
     def move_object(self, obj, new_pos):
         key = id(obj)
-        old_pos = self._map[key]
-
-        obj = self.objects[old_pos]
-        del(self.objects[old_pos])
-        self.objects[new_pos] = obj
-        self._map[key] = new_pos
+        del(self._map[self._pos_index[key]])
+        self._map[new_pos] = key
+        self._pos_index[key] = new_pos
 
     def get_position(self, obj):
         key = id(obj)
-        return self._map[key]
+        return self._pos_index[key]
 
     def get_objects_in_rect(self, rect):
         '''return objects within a given rectangle'''
         objects = {}
-        for pos in self.objects:
-            x_bound_low = pos[0] >= rect.left
-            x_bound_high = pos[0] <= rect.right
-            y_bound_low = pos[1] >= rect.top
-            y_bound_high = pos[1] <= rect.bottom
+        for pos in self._map:
+            within_left = pos[0] >= rect.left
+            within_right = pos[0] <= rect.right
+            within_top = pos[1] >= rect.top
+            within_bottom = pos[1] <= rect.bottom
 
-            if x_bound_low and x_bound_high and y_bound_low and y_bound_high:
-                objects[pos] = self.objects[pos]
+            if within_left and within_right and within_top and within_bottom:
+                objects[pos] = self._obj_cache[self._map[pos]]
 
         return objects
 
