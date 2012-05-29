@@ -25,7 +25,7 @@ class Map2D(object):
         old_pos = self._map[key]
 
         obj = self.objects[old_pos]
-        self.objects[old_pos] = None
+        del(self.objects[old_pos])
         self.objects[new_pos] = obj
         self._map[key] = new_pos
 

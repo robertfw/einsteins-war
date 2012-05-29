@@ -5,6 +5,7 @@ from pygame import draw
 from pygame.surface import Surface
 import random
 import math
+from engine.utils import memoize
 
 
 class DumbMass(object):
@@ -22,7 +23,8 @@ class Moon(object):
 
     mass = None
 
-    def get_sprite(self):
+    @memoize
+    def get_sprite(self, scale):
         sprite = Sprite()
         surface = Surface((10, 10))
         surface.set_colorkey((0, 0, 0))
@@ -39,7 +41,8 @@ class Planet(object):
 
     mass = None
 
-    def get_sprite(self):
+    @memoize
+    def get_sprite(self, scale):
         sprite = Sprite()
         surface = Surface((20, 20))
         surface.set_colorkey((0, 0, 0))
@@ -59,7 +62,8 @@ class Star(object):
     age = None
     initial_mass = None
 
-    def get_sprite(self):
+    @memoize
+    def get_sprite(self, scale):
         sprite = Sprite()
         surface = Surface((50, 50))
         surface.set_colorkey((0, 0, 0))
@@ -91,15 +95,17 @@ class Orbit(object):
         # determine our angular velocity, in degrees per second
         #self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
         
-        #temp debug override
+        #temp debug override. reality is sooooooo slooooooooow
         self._angular_velocity = 360 / (self.period)
 
+    #TODO: i am not wild about having to pass the map in
     def update_position(self, dt, map2d):
         self._cur_angle += self._angular_velocity * dt
 
         if self._cur_angle > 360:
             self._cur_angle -= 360
 
+        #my math teacher always said i'd need this some day
         x = math.sin(self._cur_angle) * self.radius
         y = math.cos(self._cur_angle) * self.radius
 
@@ -181,7 +187,6 @@ class System(object):
         self.add_orbiting_object(neptune, Moon(), .25 * AU, 30)
 
     def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
-
         '''helper function to add an object to the map with an orbit'''
 
         if start_angle is None:
@@ -213,9 +218,10 @@ class SystemWindow(Map2DWindow):
 
     def get_sprite_map(self, interpolation):
         if interpolation == 0:
+            #we're not interpolating - get fresh objects
             self.viewable_objects = self.get_objects()
-
-        #TODO: implement orbit interpolation
+        else:
+            pass  # TODO: implement orbit interpolation
         
         layers = []
         for pos in self.viewable_objects:
@@ -223,7 +229,7 @@ class SystemWindow(Map2DWindow):
                         
             #ask for forgiveness, not for permission! it's faster...
             try:
-                sprite = obj.get_sprite()
+                sprite = obj.get_sprite(self.scale)
                 layers[sprite.layer][pos] = sprite
             except IndexError:
                 #thrown when we don't have that layer yet
