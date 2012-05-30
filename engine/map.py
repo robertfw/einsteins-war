@@ -1,5 +1,4 @@
 from engine.render import Window
-from pygame.rect import Rect
 
 
 class Map2D(object):
@@ -28,11 +27,20 @@ class Map2D(object):
     def get_objects_in_rect(self, rect):
         '''return objects within a given rectangle'''
         objects = {}
+
+        top = rect[0][0]
+        left = rect[0][1]
+        width = rect[1][0]
+        height = rect[1][1]
+
+        right = left + width
+        bottom = top + height
+
         for pos in self._map:
-            within_left = pos[0] >= rect.left
-            within_right = pos[0] <= rect.right
-            within_top = pos[1] >= rect.top
-            within_bottom = pos[1] <= rect.bottom
+            within_left = pos[0] >= left
+            within_right = pos[0] <= right
+            within_top = pos[1] >= top
+            within_bottom = pos[1] <= bottom
 
             if within_left and within_right and within_top and within_bottom:
                 objects[pos] = self._obj_cache[self._map[pos]]
@@ -69,8 +77,7 @@ class Map2DWindow(Window):
         top = self._center[1] - (height / 2)
         left = self._center[0] - (width / 2)
 
-        self._slice_rect = Rect((top, left), (width, height))
-        print self._slice_rect
+        self._slice_rect = ((top, left), (width, height))
 
     def get_objects(self):
         raw = self._map2d.get_objects_in_rect(self._slice_rect)

@@ -12,8 +12,8 @@ class Game(GameCore):
     def __init__(self, *args, **kwargs):
         super(Game, self).__init__(*args, **kwargs)
 
-        fps_display = TextWidget(binding=lambda: self.clock.fps, font_size=20, color=(0, 255, 0))
-        ups_display = TextWidget(binding=lambda: self.clock.ups, font_size=20, color=(50, 50, 255))
+        fps_display = TextWidget(binding=lambda: '{fps} fps'.format(fps=self.clock.fps), font_size=20, color=(100, 255, 100))
+        ups_display = TextWidget(binding=lambda: '{ups} ups'.format(ups=self.clock.ups), font_size=20, color=(100, 100, 255))
         
         self.widgets.add_widget(fps_display, (800, 600))
         self.widgets.add_widget(ups_display, (800, 585))
@@ -32,10 +32,23 @@ class Game(GameCore):
         #create a new window, make it the full size of our current display
         self.system_window = SystemWindow(system=System(), rect=((0, 0), self.display.resolution))
         self.windows.add_window(self.system_window)
-        self.system_window.scale = 0.0025
+        self.system_window.scale = 0.000000001
 
         #add a widget to show our current scale
-        scale_display = TextWidget(binding=lambda: self.system_window.scale, font_size=20, color=(50, 255, 255))
+        def convert_scale():
+                amount = 1 / self.system_window.scale
+
+                if amount > 1000:
+                        amount = amount / 1000
+                        units = 'km'
+                else:
+                        units = 'm'
+
+                amount = round(amount, 2)
+
+                return '1px : {amount:,.2f}{units}'.format(amount=amount, units=units)
+
+        scale_display = TextWidget(binding=convert_scale, font_size=20, color=(255, 100, 100))
         self.widgets.add_widget(scale_display, (800, 570))
 
         self.register_update_callback(self.system_window.system.update_orbits)

@@ -8,69 +8,41 @@ import math
 from engine.utils import memoize
 
 
-class DumbMass(object):
-    '''
-    Represents a lump of collectable mass (asteroids, ship wrecks, etc)
-    '''
+@memoize
+def generate_sphere_sprite(diameter, color, scale):
+    radius = int(diameter / 2)
 
-    mass = None
+    sprite = Sprite()
+    surface = Surface((diameter, diameter))
+    surface.set_colorkey((0, 0, 0))
+    draw.circle(surface, color, (radius, radius), radius, 0)
+    sprite.image = surface
+
+    return sprite
 
 
-class Moon(object):
-    '''
-    Represents a planet
-    '''
+class MassiveSpheroid(object):
 
-    mass = None
-
-    @memoize
     def get_sprite(self, scale):
-        sprite = Sprite()
-        surface = Surface((10, 10))
-        surface.set_colorkey((0, 0, 0))
-        draw.circle(surface, (55, 55, 55), (5, 5), 5, 0)
-        sprite.image = surface
-
-        return sprite
+        return generate_sphere_sprite(self.diameter, self.color, scale)
 
 
-class Planet(object):
-    '''
-    Represents a planet
-    '''
-
+class Moon(MassiveSpheroid):
     mass = None
-
-    @memoize
-    def get_sprite(self, scale):
-        sprite = Sprite()
-        surface = Surface((20, 20))
-        surface.set_colorkey((0, 0, 0))
-        draw.circle(surface, (0, 255, 0), (10, 10), 10, 0)
-        sprite.image = surface
-
-        return sprite
+    diameter = 10
+    color = (50, 50, 50)
 
 
-class Star(object):
-    '''
-    Represents a star (or black hole)
-    '''
+class Planet(MassiveSpheroid):
+    mass = None
+    diameter = 20
+    color = (50, 200, 50)
 
-    # most characteristics of stars can be derived from their initial mass and their current age
-    # age is in millions of years, initial_mass is in solar masses
-    age = None
-    initial_mass = None
 
-    @memoize
-    def get_sprite(self, scale):
-        sprite = Sprite()
-        surface = Surface((50, 50))
-        surface.set_colorkey((0, 0, 0))
-        draw.circle(surface, (255, 0, 0), (25, 25), 25, 0)
-        sprite.image = surface
-
-        return sprite
+class Star(MassiveSpheroid):
+    mass = None
+    diameter = 50
+    color = (255, 255, 50)
 
 
 class Orbit(object):
@@ -150,16 +122,18 @@ class System(object):
 
         #Earth
         earth = Planet()
+        earth.color = (30, 30, 255)
         self.add_orbiting_object(sol, earth, 1 * AU, 365)
 
-        self.add_orbiting_object(earth, Moon(), .25 * AU, 29)
+        self.add_orbiting_object(earth, Moon(), .15 * AU, 29)
 
         #Mars
         mars = Planet()
+        mars.color = (255, 20, 20)
         self.add_orbiting_object(sol, mars, 1.6 * AU, 686)
 
-        self.add_orbiting_object(mars, Moon(), .25 * AU, 30)
-        self.add_orbiting_object(mars, Moon(), .35 * AU, 65)
+        self.add_orbiting_object(mars, Moon(), .15 * AU, 30)
+        self.add_orbiting_object(mars, Moon(), .20 * AU, 65)
 
         #Jupiter
         jupiter = Planet()
