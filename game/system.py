@@ -136,8 +136,6 @@ class System(object):
         #TODO: put this in a more accessible place
         AU = 149598000000  # 1 AU in meters
 
-        AU = 500  # override - full value is crashing big rects
-
         #TODO: solar system definition should be in a config file
         sol = Star()
         self.map.add_object(sol, (0, 0))

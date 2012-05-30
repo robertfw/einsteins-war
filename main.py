@@ -32,7 +32,7 @@ class Game(GameCore):
         #create a new window, make it the full size of our current display
         self.system_window = SystemWindow(system=System(), rect=((0, 0), self.display.resolution))
         self.windows.add_window(self.system_window)
-        self.system_window.scale = 0.25
+        self.system_window.scale = 0.0025
 
         #add a widget to show our current scale
         scale_display = TextWidget(binding=lambda: self.system_window.scale, font_size=20, color=(50, 255, 255))
