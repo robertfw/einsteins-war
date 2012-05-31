@@ -55,7 +55,7 @@ class Game(GameCore):
 
         #add some keybinds for moving/zooming
         pan_speed = 100
-        zoom_speed = 1.2
+        zoom_speed = 1.1
 
         self.keyboard.bindings = {
             K_w: {
@@ -75,10 +75,12 @@ class Game(GameCore):
                 'down': lambda: self.system_window.adjust_pan_vector((pan_speed, 0)),
             },
             K_e: {
-                'down': lambda: self.system_window.zoom_in(zoom_speed)
+                'up': lambda: self.system_window.adjust_zoom_vector(zoom_speed),
+                'down': lambda: self.system_window.adjust_zoom_vector(-zoom_speed)
             },
             K_q: {
-                'down': lambda: self.system_window.zoom_out(zoom_speed)
+                'up': lambda: self.system_window.adjust_zoom_vector(-zoom_speed),
+                'down': lambda: self.system_window.adjust_zoom_vector(zoom_speed)
             },
             K_ESCAPE: {
                 'down': commands.quit

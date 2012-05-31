@@ -56,6 +56,7 @@ class Map2DWindow(Window):
     _center = None  # where is the view centered
     _slice_rect = None  # calculated from scale & center, area of map to show
     pan_vector = (0, 0)  # describes movement of the center
+    delta_zoom = 0  # describes movement in zoom
     
     def __init__(self, *args, **kwargs):
         super(Map2DWindow, self).__init__(*args, **kwargs)
@@ -81,20 +82,6 @@ class Map2DWindow(Window):
         left = self._center[0] - (width / 2)
 
         self._slice_rect = ((top, left), (width, height))
-
-    def adjust_pan_vector(self, vector):
-        original = self.pan_vector
-        new = (self.pan_vector[0] + vector[0], self.pan_vector[1] + vector[1])
-        
-        if original == (0, 0) and new != (0, 0):
-            self.game.register_update_callback(self.update_center)
-        elif original != (0, 0) and new == (0, 0):
-            self.game.unregister_update_callback(self.update_center)
-
-        self.pan_vector = new
-
-    def update_center(self, dt):
-        self.center = (self.center[0] + self.pan_vector[0] * dt, self.center[1] + self.pan_vector[1] * dt)
 
     def get_objects(self):
         raw = self._map2d.get_objects_in_rect(self._slice_rect)
@@ -148,3 +135,36 @@ class Map2DWindow(Window):
 
     def zoom_out(self, amount):
         self.scale = self.scale / amount
+
+    def adjust_zoom_vector(self, amount):
+        original = self.delta_zoom
+        new = original + amount
+
+        if original == 0 and new != 0:
+            self.game.register_update_callback(self.update_scale)
+        elif original != 0 and new == 0:
+            self.game.unregister_update_callback(self.update_scale)
+
+        self.delta_zoom = new
+
+    def update_scale(self, dt):
+        #TODO: right now this doesn't adjust for varying delta times
+        #its not as simple as pan!
+        if self.delta_zoom < 0:
+            self.zoom_out(self.delta_zoom * -1)
+        elif self.delta_zoom > 0:
+            self.zoom_in(self.delta_zoom)
+
+    def adjust_pan_vector(self, vector):
+        original = self.pan_vector
+        new = (self.pan_vector[0] + vector[0], self.pan_vector[1] + vector[1])
+        
+        if original == (0, 0) and new != (0, 0):
+            self.game.register_update_callback(self.update_center)
+        elif original != (0, 0) and new == (0, 0):
+            self.game.unregister_update_callback(self.update_center)
+
+        self.pan_vector = new
+
+    def update_center(self, dt):
+        self.center = (self.center[0] + self.pan_vector[0] * dt, self.center[1] + self.pan_vector[1] * dt)
