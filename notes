@@ -1,1 +1,2 @@
 Rects are limited to 32 bit values?
+Pygame @ fullscreen will stretch across multiple monitors - is this global behaviour or just my specific setup?

@@ -15,11 +15,11 @@ class GameCore(object):
     clock = None
     update_callbacks = []
 
-    def __init__(self, resolution=(800, 600)):
+    def __init__(self, *args, **kwargs):
 
         pygame.init()
         
-        self.display = Display(resolution)
+        self.display = Display(*args)
         self.keyboard = KeyBoardController()
         self.widgets = WidgetHandler()
         self.windows = WindowManager()
@@ -40,6 +40,9 @@ class GameCore(object):
 
     def register_update_callback(self, callback):
         self.update_callbacks.append(callback)
+
+    def unregister_update_callback(self, callback):
+        self.update_callbacks.remove(callback)
 
     def _update(self, dt):
         self._handle_events()
@@ -65,7 +68,7 @@ class GameCore(object):
     def _handle_events(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN or event.type == KEYUP:
-                self.keyboard.evaluate_keystates()
+                self.keyboard.handle(event)
 
     def run(self):
         '''Run the game loop'''

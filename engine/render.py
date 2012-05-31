@@ -37,8 +37,8 @@ class Display(object):
     window = None
     resolution = None
 
-    def __init__(self, *args, **kwargs):
-        self.window = pygame.display.set_mode(*args, **kwargs)
+    def __init__(self, *args):
+        self.window = pygame.display.set_mode(*args)
         
         info = pygame.display.Info()
         self.resolution = (info.current_w, info.current_h)

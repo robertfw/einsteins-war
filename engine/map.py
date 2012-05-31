@@ -51,14 +51,17 @@ class Map2D(object):
 class Map2DWindow(Window):
     '''A map window displays a map, with ability to pan/zoom'''
     _map2d = None  # link to a Map object
+    game = None  # link to the main game object. TODO: is this ok structurally?
     _scale = 1  # pixels per map unit
     _center = None  # where is the view centered
     _slice_rect = None  # calculated from scale & center, area of map to show
+    pan_vector = (0, 0)  # describes movement of the center
     
     def __init__(self, *args, **kwargs):
         super(Map2DWindow, self).__init__(*args, **kwargs)
 
         self._map2d = kwargs.get('map2d')
+        self.game = kwargs.get('game')
 
         self.center = (0, 0)
 
@@ -78,6 +81,20 @@ class Map2DWindow(Window):
         left = self._center[0] - (width / 2)
 
         self._slice_rect = ((top, left), (width, height))
+
+    def adjust_pan_vector(self, vector):
+        original = self.pan_vector
+        new = (self.pan_vector[0] + vector[0], self.pan_vector[1] + vector[1])
+        
+        if original == (0, 0) and new != (0, 0):
+            self.game.register_update_callback(self.update_center)
+        elif original != (0, 0) and new == (0, 0):
+            self.game.unregister_update_callback(self.update_center)
+
+        self.pan_vector = new
+
+    def update_center(self, dt):
+        self.center = (self.center[0] + self.pan_vector[0] * dt, self.center[1] + self.pan_vector[1] * dt)
 
     def get_objects(self):
         raw = self._map2d.get_objects_in_rect(self._slice_rect)
