@@ -64,6 +64,8 @@ class Orbit(object):
         self.radius = radius
         self._cur_angle = angle
 
+        self.child.orbit = self
+
         # determine our angular velocity, in degrees per second
         #self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
         
@@ -162,6 +164,15 @@ class System(object):
         self.add_orbiting_object(sol, neptune, 30 * AU, 60190)
         self.add_orbiting_object(neptune, Moon(), .25 * AU, 30)
 
+        #some asteroids
+        for i in range(1000):
+            radius = random.uniform(mars.orbit.radius + AU, jupiter.orbit.radius - AU)
+            #TODO: periods should be relative to orbital radius
+            period = random.randint(mars.orbit.period, jupiter.orbit.period)
+            asteroid = Moon()
+            asteroid.diameter = 5
+            self.add_orbiting_object(sol, asteroid, radius, period)
+
     def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
         '''helper function to add an object to the map with an orbit'''
 
@@ -197,8 +208,8 @@ class SystemWindow(Map2DWindow):
             #we're not interpolating - get fresh objects
             self.viewable_objects = self.get_objects()
         else:
-            pass  # TODO: implement orbit display interpolation
-        
+            pass
+
         layers = []
         for pos in self.viewable_objects:
             obj = self.viewable_objects[pos]

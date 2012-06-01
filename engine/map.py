@@ -55,6 +55,7 @@ class Map2DWindow(Window):
     _scale = 1  # pixels per map unit
     _center = None  # where is the view centered
     _slice_rect = None  # calculated from scale & center, area of map to show
+    _dirty_slice = True  # whether we need to update our slice rect
     pan_vector = (0, 0)  # describes movement of the center
     delta_zoom = 0  # describes movement in zoom
     
@@ -66,7 +67,7 @@ class Map2DWindow(Window):
 
         self.center = (0, 0)
 
-        self._update_slice_rect()
+        self._dirty_slice = True
 
     def _update_slice_rect(self):
         width = self.rect.width * (1 / self._scale)
@@ -82,8 +83,12 @@ class Map2DWindow(Window):
         left = self._center[0] - (width / 2)
 
         self._slice_rect = ((top, left), (width, height))
+        self._dirty_slice = False
 
     def get_objects(self):
+        if self._dirty_slice:
+            self._update_slice_rect()
+
         raw = self._map2d.get_objects_in_rect(self._slice_rect)
 
         # we need to convert the map co-ordinates to window co-ordinates
@@ -116,7 +121,7 @@ class Map2DWindow(Window):
             raise ValueError('Scale must be > 0')
 
         self._scale = value
-        self._update_slice_rect()
+        self._dirty_slice = True
 
     @property
     def center(self):
@@ -125,7 +130,7 @@ class Map2DWindow(Window):
     @center.setter
     def center(self, value):
         self._center = value
-        self._update_slice_rect()
+        self._dirty_slice = True
 
     def pan(self, amount):
         self.center = (self.center[0] + amount[0], self.center[1] + amount[1])

@@ -49,7 +49,7 @@ class Game(GameCore):
         #create a new window, make it the full size of our current display
         self.system_window = SystemWindow(system=System(), rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(self.system_window)
-        self.system_window.scale = 0.000000001
+        self.system_window.scale = 0.00000001
 
         self.register_update_callback(self.system_window.system.update_orbits)
 
