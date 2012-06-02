@@ -9,11 +9,9 @@ from engine.utils import memoize
 
 
 @memoize
-def generate_sphere_sprite(diameter, color, scale):
-    radius = int(diameter / 2)
-
+def generate_sphere_sprite(radius, color, scale):
     sprite = Sprite()
-    surface = Surface((diameter, diameter))
+    surface = Surface((radius * 2, radius * 2))
     surface.set_colorkey((0, 0, 0))
     draw.circle(surface, color, (radius, radius), radius, 0)
     sprite.image = surface
@@ -24,24 +22,24 @@ def generate_sphere_sprite(diameter, color, scale):
 class MassiveSpheroid(object):
 
     def get_sprite(self, scale):
-        return generate_sphere_sprite(self.diameter, self.color, scale)
+        return generate_sphere_sprite(self.radius, self.color, scale)
 
 
 class Moon(MassiveSpheroid):
     mass = None
-    diameter = 10
+    radius = 5
     color = (50, 50, 50)
 
 
 class Planet(MassiveSpheroid):
     mass = None
-    diameter = 20
+    radius = 10
     color = (50, 200, 50)
 
 
 class Star(MassiveSpheroid):
     mass = None
-    diameter = 50
+    radius = 25
     color = (255, 255, 50)
 
 
@@ -165,12 +163,19 @@ class System(object):
         self.add_orbiting_object(neptune, Moon(), .25 * AU, 30)
 
         #some asteroids
+        inner_limit = 2.3 * AU
+        outer_limit = 3.2 * AU
+
+        #TODO: these are just educated guesses based on mars/jupiter
+        inner_period = 700
+        outer_period = 2000
+
         for i in range(1000):
-            radius = random.uniform(mars.orbit.radius + AU, jupiter.orbit.radius - AU)
-            #TODO: periods should be relative to orbital radius
-            period = random.randint(mars.orbit.period, jupiter.orbit.period)
+            radius = random.uniform(inner_limit, outer_limit)
+
+            period = (outer_period - inner_period) * radius / outer_limit
             asteroid = Moon()
-            asteroid.diameter = 5
+            asteroid.radius = 2
             self.add_orbiting_object(sol, asteroid, radius, period)
 
     def add_orbiting_object(self, parent, child, distance, period, start_angle=None):
