@@ -1,4 +1,5 @@
 from engine.render import Window
+from engine.rect import Rect
 
 
 class Map2D(object):
@@ -33,19 +34,11 @@ class Map2D(object):
         '''return objects within a given rectangle'''
         objects = {}
 
-        top = rect[0][0]
-        left = rect[0][1]
-        width = rect[1][0]
-        height = rect[1][1]
-
-        right = left + width
-        bottom = top + height
-
         for pos in self._map:
-            within_left = pos[0] >= left
-            within_right = pos[0] <= right
-            within_top = pos[1] >= top
-            within_bottom = pos[1] <= bottom
+            within_left = pos[0] >= rect.left
+            within_right = pos[0] <= rect.right
+            within_top = pos[1] >= rect.top
+            within_bottom = pos[1] <= rect.bottom
 
             if within_left and within_right and within_top and within_bottom:
                 objects[pos] = self._obj_cache[self._map[pos]]
@@ -75,19 +68,16 @@ class Map2DWindow(Window):
         self._dirty_slice = True
 
     def _update_slice_rect(self):
-        width = self.rect.width * (1 / self._scale)
-        height = self.rect.height * (1 / self._scale)
 
-        if width < self.rect.width:
-            width = self.rect.width
+        #take our screen dimensions and blow them up according to our scale
+        width = self.rect.width / self.scale
+        height = self.rect.height / self.scale
 
-        if height < self.rect.height:
-            height = self.rect.height
+        #calculate our left and top values
+        top = (self.center[1] / self.scale) - (height / 2)
+        left = (self.center[0] / self.scale) - (width / 2)
 
-        top = self._center[1] - (height / 2)
-        left = self._center[0] - (width / 2)
-
-        self._slice_rect = ((top, left), (width, height))
+        self._slice_rect = Rect(((top, left), (width, height)))
         self._dirty_slice = False
 
     def get_objects(self):
@@ -99,14 +89,17 @@ class Map2DWindow(Window):
         # we need to convert the map co-ordinates to window co-ordinates
         objects = {}
         for pos in raw:
+            new_x = pos[0]
+            new_y = pos[1]
+
             #account for scale
             new_x = pos[0] * self._scale
             new_y = pos[1] * self._scale
-            
-            #account for slice center offset
-            new_x = new_x + self._center[0]
-            new_y = new_y + self._center[1]
 
+            #account for slice center offset
+            new_x = new_x - self.center[0]
+            new_y = new_y - self.center[1]
+            
             #account for window center offset
             new_x = new_x + self.rect.centerx
             new_y = new_y + self.rect.centery

@@ -37,13 +37,16 @@ class Game(GameCore):
         ups_display = TextWidget(binding=lambda: '{ups} ups'.format(ups=self.clock.ups), font_size=20, color=(100, 100, 255))
         scale_display = TextWidget(binding=convert_scale, font_size=20, color=(255, 100, 100))
 
+        center_display = TextWidget(binding=lambda: 'c: {center}'.format(center=self.galaxy_window.center), font_size=20, color=(255, 100, 100))
+        slice_display = TextWidget(binding=lambda: 'slice: {slice}'.format(slice=self.galaxy_window._slice_rect), font_size=20, color=(255, 100, 100))
+
         widget_x = self.display.resolution[0]
         widget_y = self.display.resolution[1]
         widget_spacing = 15
-        
-        self.widgets.add_widget(scale_display, (widget_x, widget_y))
-        self.widgets.add_widget(fps_display, (widget_x, widget_y - widget_spacing))
-        self.widgets.add_widget(ups_display, (widget_x, widget_y - widget_spacing * 2))
+
+        widgets = [fps_display, ups_display, scale_display, center_display, slice_display]
+        for i in range(len(widgets)):
+            self.widgets.add_widget(widgets[i], (widget_x, widget_y - (widget_spacing * i)))
 
         #any global keybinds go here (for now)
         self.keyboard.bindings = {
@@ -55,7 +58,7 @@ class Game(GameCore):
         self.galaxy_window = GalaxyWindow(system=self.galaxy, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(self.galaxy_window)
         self.galaxy_window.scale = 0.000000001
-
+        
         #add some objects
         systems.sol(self.galaxy)
         systems.alpha_centauri(self.galaxy)
