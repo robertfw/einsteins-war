@@ -115,7 +115,7 @@ def add_orbiting_object(galaxy, parent, child, distance, period, start_angle=Non
 
     orbit = Orbit(parent=parent, child=child, period=period, angle=start_angle, radius=distance)
 
-    position = orbit.update_position(0, galaxy.map)
+    position = orbit.update_position(0)
 
     galaxy.orbits.append(orbit)
     return galaxy.map.add_object(child, position)

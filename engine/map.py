@@ -9,6 +9,11 @@ class Map2D(object):
 
     def add_object(self, obj, pos):
         key = id(obj)
+        
+        #TODO: is this bad form?
+        obj.map = self
+        obj.get_position = lambda: self.get_position(obj)
+
         self._obj_cache[key] = obj
         self._map[pos] = key
         self._pos_index[key] = pos

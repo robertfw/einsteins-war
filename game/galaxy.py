@@ -73,12 +73,7 @@ class Orbit(object):
         #temp debug override. reality is sooooooo slooooooooow
         self._angular_velocity = 360 / (self.period)
 
-    #TODO: i am not wild about having to pass the map in
-    #but we need to find out the parent position to set the center
-    #possible to move the offsetting to the system.update_orbits method
-    #and treat this method as relative to the parent body
-    #which could make sense if we use a relative positioning system
-    def update_position(self, dt, map2d):
+    def update_position(self, dt):
         self._cur_angle += self._angular_velocity * dt
 
         if self._cur_angle > 360:
@@ -88,7 +83,7 @@ class Orbit(object):
         x = math.sin(self._cur_angle) * self.radius
         y = math.cos(self._cur_angle) * self.radius
 
-        center = map2d.get_position(self.parent)
+        center = self.parent.get_position()
 
         position = (x + center[0], y + center[1])
 
@@ -108,7 +103,7 @@ class Galaxy(object):
 
     def update(self, dt):
         for orbit in self.orbits:
-            position = orbit.update_position(dt, self.map)
+            position = orbit.update_position(dt)
             self.map.move_object(orbit.child, position)
 
 
