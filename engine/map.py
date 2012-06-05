@@ -11,7 +11,8 @@ class Map2D(object):
     def add_object(self, obj, pos):
         key = id(obj)
         
-        #TODO: is this bad form?
+        #TODO: is adding object attributes like this this bad form?
+        #(it sure is nice to be able to just do it!)
         obj.map = self
         obj.get_position = lambda: self.get_position(obj)
 
@@ -54,7 +55,7 @@ class Map2DWindow(Window):
     _center = None  # where is the view centered
     _slice_rect = None  # calculated from scale & center, area of map to show
     _dirty_slice = True  # whether we need to update our slice rect
-    pan_vector = (0, 0)  # describes movement of the center
+    _pan_vector = (0, 0)  # describes movement of the center
     delta_zoom = 0  # describes movement in zoom
     
     def __init__(self, *args, **kwargs):
@@ -68,14 +69,13 @@ class Map2DWindow(Window):
         self._dirty_slice = True
 
     def _update_slice_rect(self):
-
         #take our screen dimensions and blow them up according to our scale
         width = self.rect.width / self.scale
         height = self.rect.height / self.scale
 
         #calculate our left and top values
-        top = (self.center[1] / self.scale) - (height / 2)
-        left = (self.center[0] / self.scale) - (width / 2)
+        top = self.center[1] - (height / 2)
+        left = self.center[0] - (width / 2)
 
         self._slice_rect = Rect(((top, left), (width, height)))
         self._dirty_slice = False
@@ -89,22 +89,15 @@ class Map2DWindow(Window):
         # we need to convert the map co-ordinates to window co-ordinates
         objects = {}
         for pos in raw:
-            new_x = pos[0]
-            new_y = pos[1]
+            #find the relative position in the slice rectangle
+            x_relative = (pos[0] - self._slice_rect.left) / self._slice_rect.width
+            y_relative = (pos[1] - self._slice_rect.top) / self._slice_rect.height
 
-            #account for scale
-            new_x = pos[0] * self._scale
-            new_y = pos[1] * self._scale
-
-            #account for slice center offset
-            new_x = new_x - self.center[0]
-            new_y = new_y - self.center[1]
-            
-            #account for window center offset
-            new_x = new_x + self.rect.centerx
-            new_y = new_y + self.rect.centery
-            
-            new_pos = (new_x, new_y)
+            #find the matching relative position in the screen
+            x = self.rect.width * x_relative
+            y = self.rect.height * y_relative
+                        
+            new_pos = (x, y)
             objects[new_pos] = raw[pos]
         
         return objects
@@ -158,16 +151,44 @@ class Map2DWindow(Window):
         elif self.delta_zoom > 0:
             self.zoom_in(self.delta_zoom)
 
-    def adjust_pan_vector(self, vector):
-        original = self.pan_vector
-        new = (self.pan_vector[0] + vector[0], self.pan_vector[1] + vector[1])
-        
+    @property
+    def pan_vector(self):
+        return self._pan_vector
+
+    @pan_vector.setter
+    def pan_vector(self, new):
+        original = self._pan_vector
+
         if original == (0, 0) and new != (0, 0):
             self.game.register_update_callback(self.update_center)
         elif original != (0, 0) and new == (0, 0):
             self.game.unregister_update_callback(self.update_center)
 
-        self.pan_vector = new
+        self._pan_vector = new
 
     def update_center(self, dt):
         self.center = (self.center[0] + self.pan_vector[0] * dt, self.center[1] + self.pan_vector[1] * dt)
+
+    def start_panning_left(self, base_speed):
+        self.pan_vector = (-base_speed / self.scale, self.pan_vector[1])
+
+    def stop_panning_left(self):
+        self.pan_vector = (0, self.pan_vector[1])
+
+    def start_panning_right(self, base_speed):
+        self.pan_vector = (+base_speed / self.scale, self.pan_vector[1])
+
+    def stop_panning_right(self):
+        self.pan_vector = (0, self.pan_vector[1])
+
+    def start_panning_up(self, base_speed):
+        self.pan_vector = (self.pan_vector[0], -base_speed / self.scale)
+
+    def stop_panning_up(self):
+        self.pan_vector = (self.pan_vector[0], 0)
+
+    def start_panning_down(self, base_speed):
+        self.pan_vector = (self.pan_vector[0], +base_speed / self.scale)
+
+    def stop_panning_down(self):
+        self.pan_vector = (self.pan_vector[0], 0)

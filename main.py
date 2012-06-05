@@ -2,7 +2,6 @@ from __future__ import division
 from engine.core import GameCore
 from engine.widgets import TextWidget
 from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e
-import pygame
 from game.galaxy import GalaxyWindow, Galaxy
 from game import commands
 from game.units import AU, LY
@@ -14,8 +13,11 @@ class Game(GameCore):
     def __init__(self, *args, **kwargs):
         super(Game, self).__init__(*args, **kwargs)
 
-        def convert_scale():
-            amount = 1 / self.galaxy_window.scale * self.display.resolution[0]
+        def get_viewport_range():
+            return '{width} x {height}'.format(width=convert_scale(self.display.resolution[0]), height=convert_scale(self.display.resolution[1]))
+
+        def convert_scale(width):
+            amount = 1 / self.galaxy_window.scale * width
 
             if amount > LY:
                 amount = amount / LY
@@ -33,18 +35,18 @@ class Game(GameCore):
 
             return '{amount:,.2f}{units}'.format(amount=amount, units=units)
 
-        fps_display = TextWidget(binding=lambda: '{fps} fps'.format(fps=self.clock.fps), font_size=20, color=(100, 255, 100))
-        ups_display = TextWidget(binding=lambda: '{ups} ups'.format(ups=self.clock.ups), font_size=20, color=(100, 100, 255))
-        scale_display = TextWidget(binding=convert_scale, font_size=20, color=(255, 100, 100))
-
-        center_display = TextWidget(binding=lambda: 'c: {center}'.format(center=self.galaxy_window.center), font_size=20, color=(255, 100, 100))
-        slice_display = TextWidget(binding=lambda: 'slice: {slice}'.format(slice=self.galaxy_window._slice_rect), font_size=20, color=(255, 100, 100))
+        widgets = []
+        widgets.append(TextWidget(binding=lambda: 'slice: {slice}'.format(slice=self.galaxy_window._slice_rect), font_size=20, color=(255, 100, 255)))
+        widgets.append(TextWidget(binding=lambda: 'view: {view}'.format(view=get_viewport_range()), font_size=20, color=(255, 100, 100)))
+        widgets.append(TextWidget(binding=lambda: 'c: {center}'.format(center=self.galaxy_window.center), font_size=20, color=(255, 100, 100)))
+        widgets.append(TextWidget(binding=lambda: 'pv: {vector}'.format(vector=self.galaxy_window.pan_vector), font_size=20, color=(255, 100, 255)))
+        widgets.append(TextWidget(binding=lambda: '{fps} fps'.format(fps=self.clock.fps), font_size=20, color=(100, 255, 100)))
+        widgets.append(TextWidget(binding=lambda: '{ups} ups'.format(ups=self.clock.ups), font_size=20, color=(100, 100, 255)))
 
         widget_x = self.display.resolution[0]
         widget_y = self.display.resolution[1]
         widget_spacing = 15
 
-        widgets = [fps_display, ups_display, scale_display, center_display, slice_display]
         for i in range(len(widgets)):
             self.widgets.add_widget(widgets[i], (widget_x, widget_y - (widget_spacing * i)))
 
@@ -71,20 +73,20 @@ class Game(GameCore):
 
         self.keyboard.bindings = {
             K_w: {
-                'up': lambda: self.galaxy_window.adjust_pan_vector((0, pan_speed)),
-                'down': lambda: self.galaxy_window.adjust_pan_vector((0, -pan_speed)),
+                'down': lambda: self.galaxy_window.start_panning_up(pan_speed),
+                'up': lambda: self.galaxy_window.stop_panning_up(),
             },
             K_a: {
-                'up': lambda: self.galaxy_window.adjust_pan_vector((pan_speed, 0)),
-                'down': lambda: self.galaxy_window.adjust_pan_vector((-pan_speed, 0)),
+                'down': lambda: self.galaxy_window.start_panning_left(pan_speed),
+                'up': lambda: self.galaxy_window.stop_panning_left(),
             },
             K_s: {
-                'up': lambda: self.galaxy_window.adjust_pan_vector((0, -pan_speed)),
-                'down': lambda: self.galaxy_window.adjust_pan_vector((0, pan_speed)),
+                'down': lambda: self.galaxy_window.start_panning_down(pan_speed),
+                'up': lambda: self.galaxy_window.stop_panning_down(),
             },
             K_d: {
-                'up': lambda: self.galaxy_window.adjust_pan_vector((-pan_speed, 0)),
-                'down': lambda: self.galaxy_window.adjust_pan_vector((pan_speed, 0)),
+                'down': lambda: self.galaxy_window.start_panning_right(pan_speed),
+                'up': lambda: self.galaxy_window.stop_panning_right(),
             },
             K_e: {
                 'up': lambda: self.galaxy_window.adjust_zoom_vector(zoom_speed),
@@ -99,5 +101,5 @@ class Game(GameCore):
             }
         }
 
-Game((0, 0), pygame.FULLSCREEN).run()
-#Game((800, 800)).run()
+#Game((0, 0), pygame.FULLSCREEN).run()
+Game((800, 800)).run()

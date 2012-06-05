@@ -26,7 +26,7 @@ class Rect(object):
 
     @bottom.setter
     def bottom(self, value):
-        self.top = value - height
+        self.top = value - self.height
         self.dirty = True
 
     @property
