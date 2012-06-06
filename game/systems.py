@@ -4,10 +4,6 @@ from game.galaxy import Star, Planet, Moon, Barycenter, Orbit
 import math
 
 
-def sol_system():
-    pass
-
-
 def alpha_centauri(galaxy):
     d = 4.37 * LY
     ac_a = Star()
@@ -22,7 +18,6 @@ def alpha_centauri(galaxy):
     inner_limit = 2.3 * AU
     outer_limit = 3.2 * AU
 
-    #TODO: these are just educated guesses based on mars/jupiter
     inner_period = 700
     outer_period = 2000
 
@@ -67,11 +62,18 @@ def sol(galaxy):
 
     #Saturn
     saturn = Planet()
+    saturn.color = (255, 204, 51)
     add_orbiting_object(galaxy, sol, saturn, 10 * AU, 10759)
-    add_orbiting_object(galaxy, saturn, Moon(), .25 * AU, 30)
+    
     add_orbiting_object(galaxy, saturn, Moon(), .35 * AU, 65)
     add_orbiting_object(galaxy, saturn, Moon(), .40 * AU, 95)
     add_orbiting_object(galaxy, saturn, Moon(), .50 * AU, 115)
+
+    inner_limit = .10 * AU
+    outer_limit = .15 * AU
+    inner_period = 200
+    outer_period = 250
+    add_asteroid_belt(galaxy, 1000, saturn, inner_limit, outer_limit, inner_period, outer_period, 1, 2, (105, 102, 51))
 
     #Uranus
     uranus = Planet()
@@ -85,23 +87,19 @@ def sol(galaxy):
     add_orbiting_object(galaxy, neptune, Moon(), .25 * AU, 30)
 
     #some asteroids
-    inner_limit = 2.3 * AU
-    outer_limit = 3.2 * AU
-
-    #TODO: these are just educated guesses based on mars/jupiter
-    inner_period = 700
-    outer_period = 2000
-
-    add_asteroid_belt(galaxy, 1000, sol, inner_limit, outer_limit, inner_period, outer_period)
+    #TODO: these settings are just educated guesses based on mars/jupiter
+    add_asteroid_belt(galaxy, 1000, sol, 2.3 * AU, 3.2 * AU, 700, 2000)
 
 
-def add_asteroid_belt(galaxy, number, parent, inner_limit, outer_limit, inner_period, outer_period):
+def add_asteroid_belt(galaxy, number, parent, inner_limit, outer_limit, inner_period, outer_period, min_radius=1, max_radius=3, color=None):
     for i in range(number):
         radius = random.uniform(inner_limit, outer_limit)
 
         period = (outer_period - inner_period) * radius / outer_limit
         asteroid = Moon()
-        asteroid.radius = 2
+        if color is not None:
+            asteroid.color = color
+        asteroid.radius = random.randint(min_radius, max_radius)
         add_orbiting_object(galaxy, parent, asteroid, radius, period)
 
 

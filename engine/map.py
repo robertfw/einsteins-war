@@ -35,6 +35,7 @@ class Map2D(object):
         '''return objects within a given rectangle'''
         objects = {}
 
+        #TODO: this could do with some optimizing
         for pos in self._map:
             within_left = pos[0] >= rect.left
             within_right = pos[0] <= rect.right
@@ -49,7 +50,7 @@ class Map2D(object):
 
 class Map2DWindow(Window):
     '''A map window displays a map, with ability to pan/zoom'''
-    _map2d = None  # link to a Map object
+    map2d = None  # link to a Map object
     game = None  # link to the main game object. TODO: is this ok structurally?
     _scale = 1  # pixels per map unit
     _center = None  # where is the view centered
@@ -61,7 +62,7 @@ class Map2DWindow(Window):
     def __init__(self, *args, **kwargs):
         super(Map2DWindow, self).__init__(*args, **kwargs)
 
-        self._map2d = kwargs.get('map2d')
+        self.map2d = kwargs.get('map2d')
         self.game = kwargs.get('game')
 
         self.center = (0, 0)
@@ -80,11 +81,42 @@ class Map2DWindow(Window):
         self._slice_rect = Rect(((top, left), (width, height)))
         self._dirty_slice = False
 
+    def get_sprite_map(self, interpolation):
+        if interpolation == 0:
+            #we're not interpolating - get fresh objects
+            self.viewable_objects = self.get_objects()
+        else:
+            #TODO: implement interpolation
+            pass
+
+        layers = []
+        for pos in self.viewable_objects:
+            obj = self.viewable_objects[pos]
+                        
+            #ask for forgiveness, not for permission
+            try:
+                sprite = obj.get_sprite(self.scale)
+
+                #TODO: find a way to not have to repeat this line in the except IndexError block
+                layers[sprite.layer][pos] = sprite
+            except IndexError:
+                #thrown when we don't have that layer yet
+                #we need to fill in any layers behind us
+                for i in range(len(layers), sprite.layer + 1):
+                    layers.append({})
+                
+                layers[sprite.layer][pos] = sprite
+            except AttributeError:
+                # thrown when the object doesn't have a sprite. don't draw it
+                pass
+        
+        return layers
+
     def get_objects(self):
         if self._dirty_slice:
             self._update_slice_rect()
 
-        raw = self._map2d.get_objects_in_rect(self._slice_rect)
+        raw = self.map2d.get_objects_in_rect(self._slice_rect)
 
         # we need to convert the map co-ordinates to window co-ordinates
         objects = {}

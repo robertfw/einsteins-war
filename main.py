@@ -2,10 +2,12 @@ from __future__ import division
 from engine.core import GameCore
 from engine.widgets import TextWidget
 from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e
-from game.galaxy import GalaxyWindow, Galaxy
+from game.galaxy import Galaxy
+from engine.map import Map2DWindow
 from game import commands
 from game.units import AU, LY
 from game import systems
+import pygame
 
 
 class Game(GameCore):
@@ -57,7 +59,7 @@ class Game(GameCore):
 
         #create a new window, make it the full size of our current display
         self.galaxy = Galaxy()
-        self.galaxy_window = GalaxyWindow(system=self.galaxy, rect=((0, 0), self.display.resolution), game=self)
+        self.galaxy_window = Map2DWindow(map2d=self.galaxy.map, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(self.galaxy_window)
         self.galaxy_window.scale = 0.000000001
         
@@ -101,5 +103,5 @@ class Game(GameCore):
             }
         }
 
-#Game((0, 0), pygame.FULLSCREEN).run()
-Game((800, 800)).run()
+Game((0, 0), pygame.FULLSCREEN).run()
+#Game((800, 800)).run()
