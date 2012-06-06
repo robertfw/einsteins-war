@@ -6,6 +6,7 @@ from engine.map import Map2DWindow
 from game import commands
 from game.units import AU, LY
 from game.systems import milkyway
+from game.ship import Ship
 import pygame
 
 
@@ -60,15 +61,27 @@ class Game(GameCore):
         self.galaxy = milkyway.create()
         self.galaxy_window = Map2DWindow(map2d=self.galaxy.map, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(self.galaxy_window)
-        self.galaxy_window.scale = 0.000000001
         
         self.register_update_callback(self.galaxy.update)
+
+        #add a ship and center the map on it
+        player = Ship()
+        self.galaxy.map.add_object(player, (1 * AU, 1 * AU))
+        self.galaxy_window.lock_center(player)
+        self.galaxy_window.scale = 2
+
+        # self.keyboard.bindings.update({
+        #     K_up: {
+        #         'down': lambda: self.galaxy_window.start_panning_up(pan_speed),
+        #         'up': lambda: self.galaxy_window.stop_panning_up(),
+        #     },
+        # })
 
         #add some keybinds for moving/zooming
         pan_speed = 500
         zoom_speed = 1.1
 
-        self.keyboard.bindings = {
+        self.keyboard.bindings.update({
             K_w: {
                 'down': lambda: self.galaxy_window.start_panning_up(pan_speed),
                 'up': lambda: self.galaxy_window.stop_panning_up(),
@@ -96,7 +109,7 @@ class Game(GameCore):
             K_ESCAPE: {
                 'down': commands.quit
             }
-        }
+        })
 
 Game((0, 0), pygame.FULLSCREEN).run()
 #Game((800, 800)).run()

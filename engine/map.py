@@ -203,8 +203,15 @@ class Map2DWindow(Window):
 
         self._pan_vector = new
 
+    def lock_center(self, obj):
+        self._locked_object = obj
+        self.game.register_update_callback(self.update_center)
+
     def update_center(self, dt):
-        self.center = (self.center[0] + self.pan_vector[0] * dt, self.center[1] + self.pan_vector[1] * dt)
+        if self._locked_object is not None:
+            self.center = self._locked_object.get_position()
+        else:
+            self.center = (self.center[0] + self.pan_vector[0] * dt, self.center[1] + self.pan_vector[1] * dt)
 
     def start_panning_left(self, base_speed):
         self.pan_vector = (-base_speed / self.scale, self.pan_vector[1])
