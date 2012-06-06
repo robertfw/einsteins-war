@@ -58,6 +58,7 @@ class Map2DWindow(Window):
     _dirty_slice = True  # whether we need to update our slice rect
     _pan_vector = (0, 0)  # describes movement of the center
     delta_zoom = 0  # describes movement in zoom
+    _viewable_objects = {}  # stores objects/interpolated positions in between updates
     
     def __init__(self, *args, **kwargs):
         super(Map2DWindow, self).__init__(*args, **kwargs)
@@ -84,18 +85,22 @@ class Map2DWindow(Window):
     def get_sprite_map(self, interpolation):
         if interpolation == 0:
             #we're not interpolating - get fresh objects
-            self.viewable_objects = self.get_objects()
+            self._viewable_objects = self.get_objects()
         else:
             #TODO: implement interpolation
             pass
 
+        #scale_modifier = 10
+        #display_scale = self.scale * scale_modifier
+        display_scale = self.scale
+
         layers = []
-        for pos in self.viewable_objects:
-            obj = self.viewable_objects[pos]
+        for pos in self._viewable_objects:
+            obj = self._viewable_objects[pos]
                         
             #ask for forgiveness, not for permission
             try:
-                sprite = obj.get_sprite(self.scale)
+                sprite = obj.get_sprite(display_scale)
 
                 #TODO: find a way to not have to repeat this line in the except IndexError block
                 layers[sprite.layer][pos] = sprite

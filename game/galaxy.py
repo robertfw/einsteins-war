@@ -7,13 +7,30 @@ import math
 from engine.utils import memoize
 
 
+class GalaxyFactory(object):
+    systems = []
+
+    def register(self, func):
+        self.systems.append(func)
+        return func
+
+    def create(self):
+        galaxy = Galaxy()
+        for system_generator in self.systems:
+            system_generator(galaxy)
+
+        return galaxy
+        
+
 @memoize
-def generate_sphere_sprite(radius, color, scale):
+def generate_sphere_sprite(radius, color, scale, layer=None):
     scaled_radius = int(round(radius * scale))
     if scaled_radius <= 0:
         scaled_radius = 1
     
     sprite = Sprite()
+    if layer is not None:
+        sprite.layer = layer
     surface = Surface((scaled_radius * 2, scaled_radius * 2))
     surface.set_colorkey((0, 0, 0))
     draw.circle(surface, color, (scaled_radius, scaled_radius), scaled_radius, 0)
@@ -33,19 +50,19 @@ class MassiveSpheroid(object):
         self.color = color
 
     def get_sprite(self, scale):
-        return generate_sphere_sprite(self.radius, self.color, scale)
+        return generate_sphere_sprite(self.radius, self.color, scale, self.layer)
 
 
 class Moon(MassiveSpheroid):
-    pass
+    layer = 0
 
 
 class Planet(MassiveSpheroid):
-    pass
+    layer = 1
 
 
 class Star(MassiveSpheroid):
-    pass
+    layer = 2
 
 
 class Orbit(object):
@@ -72,9 +89,6 @@ class Orbit(object):
         # determine our angular velocity, in degrees per second
         self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
         
-        #temp debug override. reality is sooooooo slooooooooow
-        #self._angular_velocity = 360 / (self.period)
-
     def update_position(self, dt):
         self._cur_angle += self._angular_velocity * dt
 

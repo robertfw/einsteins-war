@@ -2,11 +2,10 @@ from __future__ import division
 from engine.core import GameCore
 from engine.widgets import TextWidget
 from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e
-from game.galaxy import Galaxy
 from engine.map import Map2DWindow
 from game import commands
 from game.units import AU, LY
-from game import systems
+from game.systems import milkyway
 import pygame
 
 
@@ -58,15 +57,11 @@ class Game(GameCore):
         }
 
         #create a new window, make it the full size of our current display
-        self.galaxy = Galaxy()
+        self.galaxy = milkyway.create()
         self.galaxy_window = Map2DWindow(map2d=self.galaxy.map, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(self.galaxy_window)
         self.galaxy_window.scale = 0.000000001
         
-        #add some objects
-        systems.sol(self.galaxy)
-        systems.alpha_centauri(self.galaxy)
-
         self.register_update_callback(self.galaxy.update)
 
         #add some keybinds for moving/zooming

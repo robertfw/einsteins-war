@@ -1,13 +1,16 @@
 import random
-from game.units import KM, AU, LY, YEAR
-from game.galaxy import Star, Planet, Moon, Barycenter, Orbit
+from game.units import KM, AU, LY, YEAR, SR
+from game.galaxy import GalaxyFactory, Star, Planet, Moon, Barycenter, Orbit
 import math
 
+milkyway = GalaxyFactory()
 
+
+@milkyway.register
 def alpha_centauri(galaxy):
     d = 4.37 * LY
-    ac_a = Star()
-    ac_b = Star()
+    ac_a = Star(radius=1.2 * SR, color=(255, 250, 230))
+    ac_b = Star(radius=.8 * SR, color=(255, 221, 140))
     barycenter = Barycenter()
 
     galaxy.map.add_object(barycenter, (d, d))
@@ -21,12 +24,13 @@ def alpha_centauri(galaxy):
     inner_period = 700
     outer_period = 2000
 
-    add_asteroid_belt(galaxy, 500, ac_a, inner_limit, outer_limit, inner_period, outer_period)
-    add_asteroid_belt(galaxy, 500, ac_b, inner_limit, outer_limit, inner_period, outer_period)
+    add_asteroid_belt(galaxy, 750, ac_a, inner_limit, outer_limit * 1.2, inner_period, outer_period)
+    add_asteroid_belt(galaxy, 450, ac_b, inner_limit, outer_limit, inner_period, outer_period)
 
 
+@milkyway.register
 def sol(galaxy):
-    sol = Star(radius=696000 * KM, color=(255, 250, 230))
+    sol = Star(radius=1 * SR, color=(255, 250, 230))
     galaxy.map.add_object(sol, (0, 0))
 
     #Mercury
@@ -63,19 +67,21 @@ def sol(galaxy):
     saturn = Planet(radius=58232 * KM, color=(255, 204, 51))
     add_orbiting_object(galaxy, sol, saturn, 10 * AU, 10759)
     
-    add_orbiting_object(galaxy, saturn, Moon(radius=2400 * KM), 1882709 * KM, 16.69)
-    add_orbiting_object(galaxy, saturn, Moon(radius=2400 * KM), 1882709 * KM, 16.69)
-    add_orbiting_object(galaxy, saturn, Moon(radius=2400 * KM), 1882709 * KM, 16.69)
-    add_orbiting_object(galaxy, saturn, Moon(radius=2400 * KM), 1882709 * KM, 16.69)
-    add_orbiting_object(galaxy, saturn, Moon(radius=2400 * KM), 1882709 * KM, 16.69)
-    add_orbiting_object(galaxy, saturn, Moon(radius=2400 * KM), 1882709 * KM, 16.69)
-    add_orbiting_object(galaxy, saturn, Moon(radius=2400 * KM), 1882709 * KM, 16.69)
+    add_orbiting_object(galaxy, saturn, Moon(radius=198 * KM), 185000 * KM, 0.9)
+    add_orbiting_object(galaxy, saturn, Moon(radius=252 * KM), 238000 * KM, 1.4)
+    add_orbiting_object(galaxy, saturn, Moon(radius=531 * KM), 295000 * KM, 1.9)
+    add_orbiting_object(galaxy, saturn, Moon(radius=556 * KM), 377000 * KM, 2.7)
+    add_orbiting_object(galaxy, saturn, Moon(radius=750 * KM), 527000 * KM, 4.5)
+    add_orbiting_object(galaxy, saturn, Moon(radius=2560 * KM), 1222000 * KM, 16)
+    add_orbiting_object(galaxy, saturn, Moon(radius=700 * KM), 3560000 * KM, 79)
 
-    inner_limit = saturn.radius + 7000 * KM
-    outer_limit = saturn.radius + 80000 * KM
     inner_period = 200
     outer_period = 250
-    add_asteroid_belt(galaxy, 1000, saturn, inner_limit, outer_limit, inner_period, outer_period, 1, 2, (105, 102, 51))
+
+    add_asteroid_belt(galaxy, 200, saturn, 66900 * KM, 74510 * KM, inner_period, outer_period, 1, 1, (105, 102, 51))
+    add_asteroid_belt(galaxy, 500, saturn, 74658 * KM, 92000 * KM, inner_period, outer_period, 1, 1, (105, 102, 51))
+    add_asteroid_belt(galaxy, 700, saturn, 92000 * KM, 117580 * KM, inner_period, outer_period, 1, 1, (105, 102, 51))
+    add_asteroid_belt(galaxy, 1000, saturn, 122170 * KM, 136775 * KM, inner_period, outer_period, 1, 1, (105, 102, 51))
 
     #Uranus
     uranus = Planet()
@@ -90,12 +96,20 @@ def sol(galaxy):
     add_orbiting_object(galaxy, sol, neptune, 30 * AU, 60190)
     add_orbiting_object(galaxy, neptune, Moon(), .25 * AU, 30)
 
-    #some asteroids
-    #TODO: these settings are just educated guesses based on mars/jupiter
+    #the asteroid belt
     add_asteroid_belt(galaxy, 1000, sol, 2.3 * AU, 3.2 * AU, 700, 2000, min_radius=10, max_radius=1000)
 
 
-def add_asteroid_belt(galaxy, number, parent, inner_limit, outer_limit, inner_period, outer_period, min_radius=1, max_radius=3, color=None):
+def add_asteroid_belt(galaxy,
+                      number,
+                      parent,
+                      inner_limit,
+                      outer_limit,
+                      inner_period,
+                      outer_period,
+                      min_radius=1,
+                      max_radius=3,
+                      color=None):
     for i in range(number):
         radius = random.uniform(inner_limit, outer_limit)
 

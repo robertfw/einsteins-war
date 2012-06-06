@@ -3,3 +3,5 @@ AU = 149598000 * KM  # 1 AU in meters
 LY = 9460730472580800  # 1 light year
 
 YEAR = 365.25  # 1 year in days
+
+SR = 695500 * KM  # solar radius
