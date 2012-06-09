@@ -1,5 +1,5 @@
 from __future__ import division
-from engine.map import Map2D, Map2DWindow
+from engine.map import Map2D
 from engine.render import Sprite
 from pygame import draw
 from pygame.surface import Surface
@@ -9,10 +9,14 @@ from engine.utils import memoize
 
 @memoize
 def generate_sphere_sprite(radius, color, scale):
+    scaled_radius = int(round(radius * scale))
+    if scaled_radius <= 0:
+        scaled_radius = 1
+    
     sprite = Sprite()
-    surface = Surface((radius * 2, radius * 2))
+    surface = Surface((scaled_radius * 2, scaled_radius * 2))
     surface.set_colorkey((0, 0, 0))
-    draw.circle(surface, color, (radius, radius), radius, 0)
+    draw.circle(surface, color, (scaled_radius, scaled_radius), scaled_radius, 0)
     sprite.image = surface
 
     return sprite
@@ -23,27 +27,25 @@ class Barycenter(object):
 
 
 class MassiveSpheroid(object):
+    def __init__(self, mass=None, radius=600000000, color=(50, 50, 50)):
+        self.mass = mass
+        self.radius = radius
+        self.color = color
 
     def get_sprite(self, scale):
         return generate_sphere_sprite(self.radius, self.color, scale)
 
 
 class Moon(MassiveSpheroid):
-    mass = None
-    radius = 5
-    color = (50, 50, 50)
+    pass
 
 
 class Planet(MassiveSpheroid):
-    mass = None
-    radius = 10
-    color = (50, 200, 50)
+    pass
 
 
 class Star(MassiveSpheroid):
-    mass = None
-    radius = 25
-    color = (255, 255, 50)
+    pass
 
 
 class Orbit(object):
@@ -68,10 +70,10 @@ class Orbit(object):
         self.child.orbit = self
 
         # determine our angular velocity, in degrees per second
-        #self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
+        self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
         
         #temp debug override. reality is sooooooo slooooooooow
-        self._angular_velocity = 360 / (self.period)
+        #self._angular_velocity = 360 / (self.period)
 
     def update_position(self, dt):
         self._cur_angle += self._angular_velocity * dt
