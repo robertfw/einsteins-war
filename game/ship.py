@@ -2,35 +2,8 @@ from engine.render import Sprite
 from pygame.surface import Surface
 from engine.utils import memoize
 from pygame import draw, transform
-from engine.vectors import Vec2d
+from engine.structures import Vec2d, Heading
 import math
-
-
-class Heading(object):
-    angle = 0
-
-    def __init__(self, angle=0):
-        self.set_angle(angle)
-
-    def __repr__(self):
-        return str(self.angle)
-    
-    def set_angle(self, angle):
-        #TODO: currently deals with large angles by recursion, better method?
-        if angle > 360:
-            angle -= 360
-            self.set_angle(angle)
-        elif angle < 0:
-            angle += 360
-            self.set_angle(angle)
-        else:
-            self.angle = angle
-  
-    #TODO: implement __add__, __subtract__, etc
-    def add(self, degrees):
-        self.set_angle(self.angle + degrees)
-   
-        return self.angle
 
 
 class RigidBody(object):
@@ -67,14 +40,14 @@ class OrientedBody(RigidBody):
     def __init__(self):
         #TODO: investigate use of super, whether it should be used, etc
         RigidBody.__init__(self)
-        self.heading = Heading()
+        self.heading = Heading(0)
 
     def apply_relative_impulse(self, heading, amount):
-        self.apply_force(amount, self.heading.add(heading))
+        self.apply_force(amount, self.heading + amount)
 
     def apply_turn(self, amount):
-        self.heading.add(amount)
-        return self.heading.angle
+        self.heading += amount
+        return self.heading
 
 
 class Thruster(object):
@@ -105,16 +78,17 @@ class Ship(OrientedBody):
 
     def update(self, dt):
         if self.turning_left and not self.turning_right:
-            self.apply_turn(self.turn_rate)
-        elif self.turning_right and not self.turning_left:
             self.apply_turn(-self.turn_rate)
+        elif self.turning_right and not self.turning_left:
+            self.apply_turn(+self.turn_rate)
 
+        self.acceleration = Vec2d(0, 0)
         for thruster in self.thrusters:
             engine = self.thrusters[thruster]['engine']
             orientation = self.thrusters[thruster]['orientation']
 
             if engine.on:
-                self.apply_relative_impulse(engine.power, orientation)
+                self.apply_relative_impulse(orientation, engine.power)
 
         RigidBody.update(self, dt)
 
@@ -149,7 +123,7 @@ class Ship(OrientedBody):
         points = [(width / 2, 0), (0, height), (width, height)]
         draw.polygon(surface, (255, 255, 255), points)
 
-        transform.rotate(surface, -self.heading.angle)
+        transform.rotate(surface, -self.heading)
 
         sprite.image = surface
 

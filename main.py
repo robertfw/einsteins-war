@@ -37,21 +37,6 @@ class Game(GameCore):
 
             return '{amount:,.2f}{units}'.format(amount=amount, units=units)
 
-        widgets = []
-        widgets.append(TextWidget(binding=lambda: 'slice: {slice}'.format(slice=galaxy_window._slice_rect), font_size=20, color=(255, 100, 255)))
-        widgets.append(TextWidget(binding=lambda: 'view: {view}'.format(view=get_viewport_range()), font_size=20, color=(255, 100, 100)))
-        widgets.append(TextWidget(binding=lambda: 'c: {center}'.format(center=galaxy_window.center), font_size=20, color=(255, 100, 100)))
-        widgets.append(TextWidget(binding=lambda: 'pv: {vector}'.format(vector=galaxy_window.pan_vector), font_size=20, color=(255, 100, 255)))
-        widgets.append(TextWidget(binding=lambda: '{fps} fps'.format(fps=self.clock.fps), font_size=20, color=(100, 255, 100)))
-        widgets.append(TextWidget(binding=lambda: '{ups} ups'.format(ups=self.clock.ups), font_size=20, color=(100, 100, 255)))
-
-        widget_x = self.display.resolution[0]
-        widget_y = self.display.resolution[1]
-        widget_spacing = 15
-
-        for i in range(len(widgets)):
-            self.widgets.add_widget(widgets[i], (widget_x, widget_y - (widget_spacing * i)))
-
         #any global keybinds go here (for now)
         self.keyboard.bindings = {
             K_ESCAPE: commands.quit
@@ -124,6 +109,25 @@ class Game(GameCore):
                 'down': commands.quit
             }
         })
+
+        widgets = []
+        widgets.append(TextWidget(binding=lambda: 'pos: {pos}'.format(pos=player.get_position()), font_size=20, color=(255, 50, 150)))
+        widgets.append(TextWidget(binding=lambda: 'accell: {accell}'.format(accell=player.acceleration), font_size=20, color=(255, 50, 150)))
+        widgets.append(TextWidget(binding=lambda: 'vector: {vector}'.format(vector=player.vector), font_size=20, color=(255, 50, 150)))
+        widgets.append(TextWidget(binding=lambda: 'heading: {heading}'.format(heading=player.heading), font_size=20, color=(255, 150, 255)))
+        #widgets.append(TextWidget(binding=lambda: 'slice: {slice}'.format(slice=galaxy_window._slice_rect), font_size=20, color=(255, 100, 255)))
+        #widgets.append(TextWidget(binding=lambda: 'view: {view}'.format(view=get_viewport_range()), font_size=20, color=(255, 100, 100)))
+        #widgets.append(TextWidget(binding=lambda: 'c: {center}'.format(center=galaxy_window.center), font_size=20, color=(255, 100, 100)))
+        #widgets.append(TextWidget(binding=lambda: 'pv: {vector}'.format(vector=galaxy_window.pan_vector), font_size=20, color=(255, 100, 255)))
+        widgets.append(TextWidget(binding=lambda: '{fps} fps'.format(fps=self.clock.fps), font_size=20, color=(100, 255, 100)))
+        widgets.append(TextWidget(binding=lambda: '{ups} ups'.format(ups=self.clock.ups), font_size=20, color=(100, 100, 255)))
+
+        widget_x = self.display.resolution[0]
+        widget_y = self.display.resolution[1]
+        widget_spacing = 15
+
+        for i in range(len(widgets)):
+            self.widgets.add_widget(widgets[i], (widget_x, widget_y - (widget_spacing * i)))
 
 #Game((0, 0), pygame.FULLSCREEN).run()
 Game((800, 800)).run()
