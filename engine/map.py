@@ -1,3 +1,4 @@
+from __future__ import division
 from engine.render import Window
 from engine.rect import Rect
 
@@ -133,7 +134,7 @@ class Map2DWindow(Window):
             #find the matching relative position in the screen
             x = self.rect.width * x_relative
             y = self.rect.height * y_relative
-                        
+
             new_pos = (x, y)
             objects[new_pos] = raw[pos]
         
