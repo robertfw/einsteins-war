@@ -1,6 +1,7 @@
 import operator
 import math
 
+
 #TODO: unit test this
 def wrap_int(value, min, max):
     if value > max:
@@ -12,9 +13,9 @@ def wrap_int(value, min, max):
 
 
 class WrappedInteger(object):
-    def __init__(self, value, min=None, max=None):
-        self.min = min
-        self.max = max
+    def __init__(self, value, top=None, bottom=None):
+        self.min = top
+        self.max = bottom
 
         self.value = value
 
@@ -27,16 +28,16 @@ class WrappedInteger(object):
 
     @value.setter
     def value(self, value):
-        self._value = wrap_int(value, self.min, self.max)
+        wrapped = wrap_int(value, self.min, self.max)
+        self._value = wrapped
 
-    def __add__(self, other):
-        return self._value + other
+    def __iadd__(self, other):
+        self.value = self.value + other
+        return self
 
-    def __sub__(self, other):
-        return self._value - other
-
-    def __mul__(self, other):
-        return self._value * other
+    def __isub__(self, other):
+        self.value = self.value - other
+        return self
 
     def __neg__(self):
         return -self._value

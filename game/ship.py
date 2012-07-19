@@ -1,6 +1,5 @@
 from engine.render import Sprite
 from pygame.surface import Surface
-from engine.utils import memoize
 from pygame import draw, transform
 from engine.structures import Vec2d, Heading
 import math
@@ -107,8 +106,11 @@ class Ship(OrientedBody):
     def stop_turn_right(self):
         self.turning_right = False
 
-    @memoize
     def get_sprite(self, scale):
+        return self.build_sprite(scale, self.heading)
+
+    def build_sprite(self, scale, heading):
+        print 'building for {scale} @ {heading}'.format(scale=scale, heading=heading)
         height = int(round(self.size * scale))
         width = height / 3
         if height <= 0:
@@ -122,8 +124,8 @@ class Ship(OrientedBody):
 
         points = [(width / 2, 0), (0, height), (width, height)]
         draw.polygon(surface, (255, 255, 255), points)
-
-        transform.rotate(surface, -self.heading)
+        
+        transform.rotate(surface, -heading)
 
         sprite.image = surface
 
