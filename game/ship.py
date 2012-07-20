@@ -51,7 +51,7 @@ class OrientedBody(RigidBody):
 
 class Thruster(object):
     on = False
-    power = 100
+    power = 1000000
 
 
 class Ship(OrientedBody):

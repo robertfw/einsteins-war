@@ -44,7 +44,7 @@ class Game(GameCore):
 
         #create a new window, make it the full size of our current display
         galaxy = milkyway.create()
-        galaxy_window = Map2DWindow(map2d=galaxy.map, rect=((0, 0), self.display.resolution), game=self)
+        galaxy_window = Map2DWindow(map2d=galaxy.map, rect=((0, 0), self.display.resolution), game=self, draw_grid=True, grid_spacing=5)
         self.windows.add_window(galaxy_window)
         
         self.register_update_callback(galaxy.update)

@@ -1,5 +1,5 @@
 from __future__ import division
-from engine.render import Window
+from engine.render import Window, Sprite
 from engine.rect import Rect
 
 
@@ -69,6 +69,9 @@ class Map2DWindow(Window):
 
         self.center = (0, 0)
 
+        self.draw_grid = kwargs.get('draw_grid')
+        self.grid_spacing = kwargs.get('grid_spacing')
+
         self._dirty_slice = True
 
     def _update_slice_rect(self):
@@ -91,11 +94,10 @@ class Map2DWindow(Window):
             #TODO: implement interpolation
             pass
 
-        #scale_modifier = 10
-        #display_scale = self.scale * scale_modifier
         display_scale = self.scale
 
         layers = []
+
         for pos in self._viewable_objects:
             obj = self._viewable_objects[pos]
                         
