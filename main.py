@@ -8,7 +8,7 @@ from game.units import AU, LY
 from game.systems import milkyway
 from game.ship import Ship
 import pygame
-
+from game.galaxy import MassiveSpheroid
 
 class Game(GameCore):
 
@@ -53,9 +53,9 @@ class Game(GameCore):
         player = Ship()
         galaxy.map.add_object(player, (1 * AU, 1 * AU))
         self.register_update_callback(player.update)
-        
+
         galaxy_window.lock_center(player)
-        galaxy_window.scale = 2
+        galaxy_window.scale = .001
 
         self.keyboard.bindings.update({
             K_UP: {

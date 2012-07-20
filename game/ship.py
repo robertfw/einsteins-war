@@ -18,11 +18,10 @@ class RigidBody(object):
         self.vector += self.acceleration
         cur_pos = self.get_position()
         new_pos = (cur_pos[0] + self.vector[0], cur_pos[1] + self.vector[1])
-        #print 'moving to {pos}'.format(pos=new_pos)
 
         self.map.move_object(self, new_pos)
 
-    def apply_force(self, heading, amount):
+    def apply_force(self, amount, heading):
         theta = math.radians(heading)
 
         x = round(math.sin(theta) * amount, 2)
@@ -41,8 +40,9 @@ class OrientedBody(RigidBody):
         RigidBody.__init__(self)
         self.heading = Heading(0)
 
-    def apply_relative_impulse(self, heading, amount):
-        self.apply_force(amount, self.heading + amount)
+    def apply_relative_impulse(self, relative_heading, amount):
+        actual_heading = self.heading + relative_heading
+        self.apply_force(amount, actual_heading)
 
     def apply_turn(self, amount):
         self.heading += amount
@@ -51,12 +51,12 @@ class OrientedBody(RigidBody):
 
 class Thruster(object):
     on = False
-    power = 10
+    power = 100
 
 
 class Ship(OrientedBody):
-    size = 10
-    turn_rate = .5
+    size = 100
+    turn_rate = 1
     turning_left = False
     turning_right = False
     
@@ -110,7 +110,6 @@ class Ship(OrientedBody):
         return self.build_sprite(scale, self.heading)
 
     def build_sprite(self, scale, heading):
-        print 'building for {scale} @ {heading}'.format(scale=scale, heading=heading)
         height = int(round(self.size * scale))
         width = height / 3
         if height <= 0:
@@ -125,8 +124,8 @@ class Ship(OrientedBody):
         points = [(width / 2, 0), (0, height), (width, height)]
         draw.polygon(surface, (255, 255, 255), points)
         
-        transform.rotate(surface, -heading)
+        rotated_surface = transform.rotate(surface, -heading)
 
-        sprite.image = surface
+        sprite.image = rotated_surface
 
         return sprite

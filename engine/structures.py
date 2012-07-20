@@ -28,8 +28,13 @@ class WrappedInteger(object):
 
     @value.setter
     def value(self, value):
-        wrapped = wrap_int(value, self.min, self.max)
-        self._value = wrapped
+        self._value = self._get_val_wrapped(value)
+
+    def _get_val_wrapped(self, value):
+        return wrap_int(value, self.min, self.max)
+
+    def __add__(self, other):
+        return self._get_val_wrapped(self.value + other)
 
     def __iadd__(self, other):
         self.value = self.value + other
@@ -336,14 +341,14 @@ class Vec2d(object):
     angle = property(get_angle, __setangle, None, "gets or sets the angle of a vector")
  
     def get_angle_between(self, other):
-        cross = self.x*other[1] - self.y*other[0]
-        dot = self.x*other[0] + self.y*other[1]
+        cross = self.x * other[1] - self.y * other[0]
+        dot = self.x * other[0] + self.y * other[1]
         return math.degrees(math.atan2(cross, dot))
  
     def normalized(self):
         length = self.length
         if length != 0:
-            return self/length
+            return self / length
         return Vec2d(self)
  
     def normalize_return_length(self):
@@ -359,31 +364,31 @@ class Vec2d(object):
     def perpendicular_normal(self):
         length = self.length
         if length != 0:
-            return Vec2d(-self.y/length, self.x/length)
+            return Vec2d(-self.y / length, self.x / length)
         return Vec2d(self)
  
     def dot(self, other):
-        return float(self.x*other[0] + self.y*other[1])
+        return float(self.x * other[0] + self.y * other[1])
  
     def get_distance(self, other):
-        return math.sqrt((self.x - other[0])**2 + (self.y - other[1])**2)
+        return math.sqrt((self.x - other[0]) ** 2 + (self.y - other[1]) ** 2)
  
     def get_dist_sqrd(self, other):
-        return (self.x - other[0])**2 + (self.y - other[1])**2
+        return (self.x - other[0]) ** 2 + (self.y - other[1]) ** 2
  
     def projection(self, other):
-        other_length_sqrd = other[0]*other[0] + other[1]*other[1]
+        other_length_sqrd = other[0] * other[0] + other[1] * other[1]
         projected_length_times_other_length = self.dot(other)
-        return other*(projected_length_times_other_length/other_length_sqrd)
+        return other * (projected_length_times_other_length / other_length_sqrd)
  
     def cross(self, other):
-        return self.x*other[1] - self.y*other[0]
+        return self.x * other[1] - self.y * other[0]
  
     def interpolate_to(self, other, range):
-        return Vec2d(self.x + (other[0] - self.x)*range, self.y + (other[1] - self.y)*range)
+        return Vec2d(self.x + (other[0] - self.x) * range, self.y + (other[1] - self.y) * range)
  
     def convert_to_basis(self, x_vector, y_vector):
-        return Vec2d(self.dot(x_vector)/x_vector.get_length_sqrd(), self.dot(y_vector)/y_vector.get_length_sqrd())
+        return Vec2d(self.dot(x_vector) / x_vector.get_length_sqrd(), self.dot(y_vector) / y_vector.get_length_sqrd())
  
     def __getstate__(self):
         return [self.x, self.y]
@@ -406,47 +411,47 @@ if __name__ == "__main__":
             pass
  
         def testCreationAndAccess(self):
-            v = Vec2d(111,222)
+            v = Vec2d(111, 222)
             self.assert_(v.x == 111 and v.y == 222)
             v.x = 333
             v[1] = 444
             self.assert_(v[0] == 333 and v[1] == 444)
  
         def testMath(self):
-            v = Vec2d(111,222)
-            self.assertEqual(v + 1, Vec2d(112,223))
-            self.assert_(v - 2 == [109,220])
-            self.assert_(v * 3 == (333,666))
+            v = Vec2d(111, 222)
+            self.assertEqual(v + 1, Vec2d(112, 223))
+            self.assert_(v - 2 == [109, 220])
+            self.assert_(v * 3 == (333, 666))
             self.assert_(v / 2.0 == Vec2d(55.5, 111))
             self.assert_(v / 2 == (55.5, 111))
-            self.assert_(v ** Vec2d(2,3) == [12321, 10941048])
+            self.assert_(v ** Vec2d(2, 3) == [12321, 10941048])
             self.assert_(v + [-11, 78] == Vec2d(100, 300))
-            self.assert_(v / [10,2] == [11.1,111])
+            self.assert_(v / [10, 2] == [11.1, 111])
  
         def testReverseMath(self):
-            v = Vec2d(111,222)
-            self.assert_(1 + v == Vec2d(112,223))
-            self.assert_(2 - v == [-109,-220])
-            self.assert_(3 * v == (333,666))
-            self.assert_([222,888] / v == [2,4])
-            self.assert_([111,222] ** Vec2d(2,3) == [12321, 10941048])
+            v = Vec2d(111, 222)
+            self.assert_(1 + v == Vec2d(112, 223))
+            self.assert_(2 - v == [-109, -220])
+            self.assert_(3 * v == (333, 666))
+            self.assert_([222, 888] / v == [2, 4])
+            self.assert_([111, 222] ** Vec2d(2, 3) == [12321, 10941048])
             self.assert_([-11, 78] + v == Vec2d(100, 300))
  
         def testUnary(self):
-            v = Vec2d(111,222)
+            v = Vec2d(111, 222)
             v = -v
-            self.assert_(v == [-111,-222])
+            self.assert_(v == [-111, -222])
             v = abs(v)
-            self.assert_(v == [111,222])
+            self.assert_(v == [111, 222])
  
         def testLength(self):
-            v = Vec2d(3,4)
+            v = Vec2d(3, 4)
             self.assert_(v.length == 5)
             self.assert_(v.get_length_sqrd() == 25)
             self.assert_(v.normalize_return_length() == 5)
             self.assert_(v.length == 1)
             v.length = 5
-            self.assert_(v == Vec2d(3,4))
+            self.assert_(v == Vec2d(3, 4))
             v2 = Vec2d(10, -2)
             self.assert_(v.get_distance(v2) == (v - v2).get_length())
  
@@ -465,7 +470,6 @@ if __name__ == "__main__":
             v2.rotate(300)
             self.assertAlmostEquals(v.get_angle_between(v2), -60)
             v2.rotate(v2.get_angle_between(v))
-            angle = v.get_angle_between(v2)
             self.assertAlmostEquals(v.get_angle_between(v2), 0)
  
         def testHighLevel(self):
@@ -476,6 +480,7 @@ if __name__ == "__main__":
             self.assert_(v.projection(basis0) == (10, 0))
             self.assert_(basis0.dot(basis1) == 0)
  
+        #TODO: verify this test, rhs isn't used
         def testCross(self):
             lhs = Vec2d(1, .5)
             rhs = Vec2d(4,6)
@@ -494,6 +499,7 @@ if __name__ == "__main__":
             self.assert_(int_vec != 5)
             self.assert_(int_vec != [3, -2, -5])
  
+        #TODO: verify this test, inplace_src is not used
         def testInplace(self):
             inplace_vec = Vec2d(5, 13)
             inplace_ref = inplace_vec
