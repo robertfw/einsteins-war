@@ -55,7 +55,7 @@ class Game(GameCore):
         self.register_update_callback(player.update)
 
         galaxy_window.lock_center(player)
-        galaxy_window.scale = .001
+        galaxy_window.scale = 2
 
         self.keyboard.bindings.update({
             K_UP: {

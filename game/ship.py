@@ -51,7 +51,7 @@ class OrientedBody(RigidBody):
 
 class Thruster(object):
     on = False
-    power = 1000000
+    power = 100
 
 
 class Ship(OrientedBody):
@@ -107,25 +107,50 @@ class Ship(OrientedBody):
         self.turning_right = False
 
     def get_sprite(self, scale):
-        return self.build_sprite(scale, self.heading)
+        return build_ship_sprite(
+            scale=scale,
+            orientation=self.heading,
+            size=self.size,
+            main_engine=self.thrusters['main']['engine'].on,
+            retro_engine=self.thrusters['retro']['engine'].on
+        )
 
-    def build_sprite(self, scale, heading):
-        height = int(round(self.size * scale))
-        width = height / 3
-        if height <= 0:
-            height = 3
-            width = 1
 
-        sprite = Sprite()
-        sprite.layer = 10
-        surface = Surface((width, height))
-        surface.set_colorkey((0, 0, 0))
+def build_ship_sprite(size=None, scale=None, orientation=None, heading=None, main_engine=False, retro_engine=False):
+    ship_height = int(round(size * scale))
+    if ship_height <= 0:
+        ship_height = 9
 
-        points = [(width / 2, 0), (0, height), (width, height)]
-        draw.polygon(surface, (255, 255, 255), points)
-        
-        rotated_surface = transform.rotate(surface, -heading)
+    width = ship_height / 3
 
-        sprite.image = rotated_surface
+    flame_height = ship_height / 5
+    image_width = width
+    image_height = ship_height + (flame_height * 2)
 
-        return sprite
+    sprite = Sprite()
+    sprite.layer = 10
+    surface = Surface((image_width, image_height))
+    surface.set_colorkey((0, 0, 0))
+
+    ship_top = flame_height
+    ship_bottom = image_height - flame_height
+    ship_left = 0
+    ship_right = image_width
+    ship_middle = image_width / 2
+
+    ship_triangle = [(ship_middle, ship_top), (ship_left, ship_bottom), (ship_right, ship_bottom)]
+    draw.polygon(surface, (255, 255, 255), ship_triangle)
+
+    if main_engine:
+        bottom_flame = [(ship_middle, ship_bottom), (0, image_height), (image_width, image_height)]
+        draw.polygon(surface, (255, 255, 0), bottom_flame)
+
+    if retro_engine:
+        top_flame = [(ship_middle, ship_top), (0, 0), (image_width, 0)]
+        draw.polygon(surface, (255, 255, 0), top_flame)
+
+    rotated_surface = transform.rotate(surface, -orientation)
+
+    sprite.image = rotated_surface
+
+    return sprite
