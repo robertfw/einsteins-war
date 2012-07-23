@@ -1,36 +1,63 @@
 from __future__ import division
-from engine.render import Window, Sprite
+from engine.render import Window
 from engine.rect import Rect
-
+from collections import defaultdict
 
 class Map2D(object):
     '''A representation of objects in a 2d physical space'''
-    _map = {}
+    _map = defaultdict(list)
     _pos_index = {}
     _obj_cache = {}
 
+    def _add_id_to_pos(self, key, pos):
+        self._map[pos].append(key)
+        self._pos_index[key] = pos
+
+    def _remove_id_from_map(self, key):
+        map_index = self._pos_index[key]
+        sub_list = self._map[map_index]
+        del(sub_list[sub_list.index(key)])
+
+    def _get_obj_key(self, obj):
+        return id(obj)
+
     def add_object(self, obj, pos):
-        key = id(obj)
+        key = self._get_obj_key(obj)
         
         #TODO: is adding object attributes like this this bad form?
         #(it sure is nice to be able to just do it!)
         obj.map = self
         obj.get_position = lambda: self.get_position(obj)
 
+        #we're not going to store the object in the dict, just the id
+        #TODO: find out if this is helpful. seems to be on intuition
         self._obj_cache[key] = obj
-        self._map[pos] = key
-        self._pos_index[key] = pos
+
+        self._add_id_to_pos(key, pos)
+
         return key
 
-    def move_object(self, obj, new_pos):
-        key = id(obj)
-        del(self._map[self._pos_index[key]])
-        self._map[new_pos] = key
-        self._pos_index[key] = new_pos
+    def move_object(self, obj, pos):
+        key = self._get_obj_key(obj)
+        self._remove_id_from_map(key)
+        self._add_id_to_pos(key, pos)
+
+    def remove_object(self, obj):
+        key = self._get_obj_key(obj)
+        self._remove_id_from_map(self, key)
 
     def get_position(self, obj):
-        key = id(obj)
+        key = self._get_obj_key(obj)
         return self._pos_index[key]
+
+    def _pos_is_in_rect(self, pos, rect):
+        if pos[1] >= rect.top \
+        and pos[0] >= rect.left \
+        and pos[0] <= rect.right \
+        and pos[1] <= rect.bottom:
+            return True
+        else:
+            return False
 
     def get_objects_in_rect(self, rect):
         '''return objects within a given rectangle'''
@@ -38,13 +65,12 @@ class Map2D(object):
 
         #TODO: this could do with some optimizing
         for pos in self._map:
-            within_left = pos[0] >= rect.left
-            within_right = pos[0] <= rect.right
-            within_top = pos[1] >= rect.top
-            within_bottom = pos[1] <= rect.bottom
+            if self._pos_is_in_rect(pos, rect):
+                obj_list = []
+                for key in self._map[pos]:
+                    obj_list.append(self._obj_cache[key])
 
-            if within_left and within_right and within_top and within_bottom:
-                objects[pos] = self._obj_cache[self._map[pos]]
+                objects[pos] = obj_list
 
         return objects
 
@@ -99,25 +125,24 @@ class Map2DWindow(Window):
         layers = []
 
         for pos in self._viewable_objects:
-            obj = self._viewable_objects[pos]
-                        
-            #ask for forgiveness, not for permission
-            try:
-                sprite = obj.get_sprite(display_scale)
+            for obj in self._viewable_objects[pos]:
+                #ask for forgiveness, not for permission
+                try:
+                    sprite = obj.get_sprite(display_scale)
 
-                #TODO: find a way to not have to repeat this line in the except IndexError block
-                layers[sprite.layer][pos] = sprite
-            except IndexError:
-                #thrown when we don't have that layer yet
-                #we need to fill in any layers behind us
-                for i in range(len(layers), sprite.layer + 1):
-                    layers.append({})
-                
-                layers[sprite.layer][pos] = sprite
-            except AttributeError:
-                # thrown when the object doesn't have a sprite. don't draw it
-                pass
-        
+                    #TODO: find a way to not have to repeat this line in the except IndexError block
+                    layers[sprite.layer][pos] = sprite
+                except IndexError:
+                    #thrown when we don't have that layer yet
+                    #we need to fill in any layers behind us
+                    for i in range(len(layers), sprite.layer + 1):
+                        layers.append({})
+                    
+                    layers[sprite.layer][pos] = sprite
+                except AttributeError:
+                    # thrown when the object doesn't have a sprite. don't draw it
+                    pass
+            
         return layers
 
     def get_objects(self):
