@@ -3,6 +3,7 @@ from engine.render import Window
 from engine.rect import Rect
 from collections import defaultdict
 
+
 class Map2D(object):
     '''A representation of objects in a 2d physical space'''
     _map = defaultdict(list)
