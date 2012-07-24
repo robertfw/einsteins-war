@@ -58,7 +58,7 @@ class Thruster(object):
 
 class Ship(OrientedBody):
     size = 100
-    turn_rate = 2
+    max_turn_rate = 10
     turning_left = False
     turning_right = False
     _ordered_heading = None
@@ -103,13 +103,22 @@ class Ship(OrientedBody):
                 relative = Heading(ordered - current)
                 if relative.value < 180:
                     self.turning_right = True
+                    distance = relative.value
                 else:
                     self.turning_left = True
+                    distance = 360 - relative.value
+
+                if distance > self.max_turn_rate:
+                    turn_rate = self.max_turn_rate
+                else:
+                    turn_rate = relative.value
+        else:
+            turn_rate = self.max_turn_rate
 
         if self.turning_left and not self.turning_right:
-            self.apply_turn(-self.turn_rate)
+            self.apply_turn(-turn_rate)
         elif self.turning_right and not self.turning_left:
-            self.apply_turn(+self.turn_rate)
+            self.apply_turn(+turn_rate)
 
         self.acceleration = Vec2d(0, 0)
         for thruster in self.thrusters:
