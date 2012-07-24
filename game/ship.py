@@ -65,6 +65,7 @@ class Ship(OrientedBody):
     
     def __init__(self):
         OrientedBody.__init__(self)
+        self.heading = Heading(45)
 
         self.thrusters = {
             'main': {
@@ -83,7 +84,6 @@ class Ship(OrientedBody):
                 'engine': Thruster(power=5),
                 'orientation': 90
             }
-
         }
 
     def order_heading(self, heading):
@@ -94,9 +94,17 @@ class Ship(OrientedBody):
         if self._ordered_heading is not None:
             self.turning_left = False
             self.turning_right = False
-            if self._ordered_heading.value != self.heading.value:
-                print 'turning to {0}'.format(self._ordered_heading)
-                #TODO: which direction to turn logic
+
+            ordered = self._ordered_heading.value
+            current = self.heading.value
+
+            if ordered != current:
+                #convert to relative heading
+                relative = Heading(ordered - current)
+                if relative.value < 180:
+                    self.turning_right = True
+                else:
+                    self.turning_left = True
 
         if self.turning_left and not self.turning_right:
             self.apply_turn(-self.turn_rate)

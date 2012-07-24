@@ -105,7 +105,6 @@ class Game(GameCore):
             MOUSEMOTION: set_player_heading_from_mouse
         }
 
-
         #add some keybinds for moving/zooming
         #pan_speed = 500
         zoom_speed = 1.1
