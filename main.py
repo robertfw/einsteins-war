@@ -1,14 +1,14 @@
 from __future__ import division
 from engine.core import GameCore
 from engine.widgets import TextWidget
-from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e, K_UP, K_DOWN, K_LEFT, K_RIGHT
+from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e, K_UP, K_DOWN, K_LEFT, K_RIGHT, MOUSEMOTION
 from engine.map import Map2DWindow
 from game import commands
 from game.units import AU, LY
 from game.systems import milkyway
 from game.ship import Ship
 import pygame
-from game.galaxy import MassiveSpheroid
+
 
 class Game(GameCore):
 
@@ -58,45 +58,75 @@ class Game(GameCore):
         galaxy_window.scale = 2
 
         self.keyboard.bindings.update({
-            K_UP: {
+            K_w: {
                 'down': lambda: player.set_thruster('main', True),
                 'up': lambda: player.set_thruster('main', False)
             },
-            K_DOWN: {
+            K_s: {
                 'down': lambda: player.set_thruster('retro', True),
                 'up': lambda: player.set_thruster('retro', False)
             },
-            K_LEFT: {
-                'down': lambda: player.start_turn_left(),
-                'up': lambda: player.stop_turn_left()
+            K_a: {
+                'down': lambda: player.set_thruster('strafe_left', True),
+                'up': lambda: player.set_thruster('strafe_left', False)
             },
-            K_RIGHT: {
-                'down': lambda: player.start_turn_right(),
-                'up': lambda: player.stop_turn_right()
+            K_d: {
+                'down': lambda: player.set_thruster('strafe_right', True),
+                'up': lambda: player.set_thruster('strafe_right', False)
             }
         })
 
+        def set_player_heading_from_mouse(event):
+            #convert to be centered around a 0,0 in the middle
+            x = event.pos[0] - galaxy_window.rect.centerx
+            y = event.pos[1] - galaxy_window.rect.centery
+
+            import math
+            theta_rad = math.atan2(y, x)
+            degrees = math.degrees(theta_rad)
+
+            #TODO: tidy this up
+            if degrees >= 0:
+                heading = degrees + 90
+            elif degrees < 0:
+                if degrees < -90:
+                    heading = 360 - abs(degrees) + 90
+                else:
+                    heading = 90 - abs(degrees)
+
+            if heading == 360:
+                heading = 0
+            
+            heading = round(heading)
+
+            player.order_heading(heading)
+
+        self.mouse.bindings = {
+            MOUSEMOTION: set_player_heading_from_mouse
+        }
+
+
         #add some keybinds for moving/zooming
-        pan_speed = 500
+        #pan_speed = 500
         zoom_speed = 1.1
 
         self.keyboard.bindings.update({
-            K_w: {
-                'down': lambda: galaxy_window.start_panning_up(pan_speed),
-                'up': lambda: galaxy_window.stop_panning_up(),
-            },
-            K_a: {
-                'down': lambda: galaxy_window.start_panning_left(pan_speed),
-                'up': lambda: galaxy_window.stop_panning_left(),
-            },
-            K_s: {
-                'down': lambda: galaxy_window.start_panning_down(pan_speed),
-                'up': lambda: galaxy_window.stop_panning_down(),
-            },
-            K_d: {
-                'down': lambda: galaxy_window.start_panning_right(pan_speed),
-                'up': lambda: galaxy_window.stop_panning_right(),
-            },
+            # K_w: {
+            #     'down': lambda: galaxy_window.start_panning_up(pan_speed),
+            #     'up': lambda: galaxy_window.stop_panning_up(),
+            # },
+            # K_a: {
+            #     'down': lambda: galaxy_window.start_panning_left(pan_speed),
+            #     'up': lambda: galaxy_window.stop_panning_left(),
+            # },
+            # K_s: {
+            #     'down': lambda: galaxy_window.start_panning_down(pan_speed),
+            #     'up': lambda: galaxy_window.stop_panning_down(),
+            # },
+            # K_d: {
+            #     'down': lambda: galaxy_window.start_panning_right(pan_speed),
+            #     'up': lambda: galaxy_window.stop_panning_right(),
+            # },
             K_e: {
                 'up': lambda: galaxy_window.adjust_zoom_vector(zoom_speed),
                 'down': lambda: galaxy_window.adjust_zoom_vector(-zoom_speed)

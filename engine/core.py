@@ -1,8 +1,8 @@
 import pygame
 import sys
-from pygame.locals import KEYDOWN, KEYUP
+from pygame.locals import KEYDOWN, KEYUP, MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION
 from engine.render import Display, WindowManager
-from engine.controls import KeyBoardController
+from engine.controls import KeyBoardController, MouseController
 from engine.widgets import WidgetHandler
 from engine.gameclock import GameClock
 
@@ -21,6 +21,7 @@ class GameCore(object):
         
         self.display = Display(*args)
         self.keyboard = KeyBoardController()
+        self.mouse = MouseController()
         self.widgets = WidgetHandler()
         self.windows = WindowManager()
 
@@ -66,9 +67,14 @@ class GameCore(object):
         self.display.update()
 
     def _handle_events(self):
+        keyboard_events = [KEYDOWN, KEYUP]
+        mouse_events = [MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION]
+
         for event in pygame.event.get():
-            if event.type == KEYDOWN or event.type == KEYUP:
+            if event.type in keyboard_events:
                 self.keyboard.handle(event)
+            elif event.type in mouse_events:
+                self.mouse.handle(event)
 
     def run(self):
         '''Run the game loop'''

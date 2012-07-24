@@ -3,8 +3,6 @@ from pygame.locals import KEYDOWN, KEYUP
 
 
 class KeyBoardController(object):
-    bindings = None
-
     def __init__(self, bindings=None):
         self.bindings = bindings
 
@@ -16,9 +14,12 @@ class KeyBoardController(object):
             self.bindings[event.key]['down']()
         elif event.type == KEYUP and event.key in self.bindings and 'up' in self.bindings[event.key]:
             self.bindings[event.key]['up']()
-        
-    def evaluate_keystates(self):
-        keystates = pygame.key.get_pressed()
-        for key in self.bindings:
-            if keystates[key]:
-                self.bindings[key]()
+
+
+class MouseController(object):
+    def __init__(self, bindings=None):
+        self.bindings = bindings
+
+    def handle(self, event):
+        if event.type in self.bindings:
+            self.bindings[event.type](event)

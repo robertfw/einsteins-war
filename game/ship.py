@@ -50,32 +50,54 @@ class OrientedBody(RigidBody):
 
 
 class Thruster(object):
-    on = False
-    power = 100
+    def __init__(self, power=None):
+        self.power = power
 
+    on = False
+    
 
 class Ship(OrientedBody):
     size = 100
-    turn_rate = 1
+    turn_rate = 2
     turning_left = False
     turning_right = False
+    _ordered_heading = None
     
     def __init__(self):
-        #TODO: investigate use of super, whether it should be used, etc
         OrientedBody.__init__(self)
 
         self.thrusters = {
             'main': {
-                'engine': Thruster(),
+                'engine': Thruster(power=10),
                 'orientation': 180
             },
             'retro': {
-                'engine': Thruster(),
+                'engine': Thruster(power=5),
                 'orientation': 0
+            },
+            'strafe_left': {
+                'engine': Thruster(power=5),
+                'orientation': 270
+            },
+            'strafe_right': {
+                'engine': Thruster(power=5),
+                'orientation': 90
             }
+
         }
 
+    def order_heading(self, heading):
+        self._ordered_heading = Heading(heading)
+
     def update(self, dt):
+        #TODO: tidy up ordered_heading stuff
+        if self._ordered_heading is not None:
+            self.turning_left = False
+            self.turning_right = False
+            if self._ordered_heading.value != self.heading.value:
+                print 'turning to {0}'.format(self._ordered_heading)
+                #TODO: which direction to turn logic
+
         if self.turning_left and not self.turning_right:
             self.apply_turn(-self.turn_rate)
         elif self.turning_right and not self.turning_left:
