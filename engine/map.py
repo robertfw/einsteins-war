@@ -1,5 +1,5 @@
 from __future__ import division
-from engine.render import Window, Sprite
+from engine.render import Window
 from engine.rect import Rect
 
 
