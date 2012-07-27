@@ -14,6 +14,8 @@ class GameCore(object):
     windows = None
     clock = None
     update_callbacks = []
+    pre_render_callbacks = []
+    post_render_callbacks = []
 
     def __init__(self, *args, **kwargs):
 
@@ -45,6 +47,18 @@ class GameCore(object):
     def unregister_update_callback(self, callback):
         self.update_callbacks.remove(callback)
 
+    def register_pre_render_callback(self, callback):
+        self.pre_render_callbacks.append(callback)
+
+    def unregister_pre_render_callback(self, callback):
+        self.pre_render_callbacks.remove(callback)
+
+    def register_post_render_callback(self, callback):
+        self.post_render_callbacks.append(callback)
+
+    def unregister_post_render_callback(self, callback):
+        self.post_render_callbacks.remove(callback)
+
     def _update(self, dt):
         self._handle_events()
 
@@ -55,6 +69,10 @@ class GameCore(object):
         # blank the screen
         self.display.reset_view()
 
+        #run any pre-render callbacks
+        for callback in self.pre_render_callbacks:
+            callback(self.display)
+
         # tell all windows to render
         #TODO: should we denote that get_window_layers returns a generator?
         map(lambda layer: self.display.draw_sprite_map(layer), self.windows.get_window_layers(interpolation))
@@ -62,6 +80,10 @@ class GameCore(object):
         #draw any widgets
         self.widgets.update(interpolation)
         self.display.draw_sprite_map(self.widgets.get_widget_map())
+
+        #run any post-render callbacks
+        for callback in self.post_render_callbacks:
+            callback(self.display)
 
         #update the display
         self.display.update()

@@ -1,6 +1,7 @@
 from __future__ import division
 from engine.render import Window
 from engine.rect import Rect
+from pygame import gfxdraw
 
 
 class Map2D(object):
@@ -69,10 +70,39 @@ class Map2DWindow(Window):
 
         self.center = (0, 0)
 
-        self.draw_grid = kwargs.get('draw_grid')
-        self.grid_spacing = kwargs.get('grid_spacing')
-
         self._dirty_slice = True
+
+    def draw_grid(self, display):
+        spacing = 100
+
+        if self._slice_rect is None:
+            return
+
+        left = self._slice_rect.left
+        top = self._slice_rect.top
+
+        start_left = int(left + left % spacing)
+        start_top = int(top + top % spacing)
+
+        screen_start = self._convert_world_to_screen((start_left, start_top))
+        screen_left = screen_start[0]
+        screen_top = screen_start[1]
+        screen_spacing = int(spacing * self.scale)
+
+        for x in range(screen_left, self.rect.right, screen_spacing):
+            for y in range(screen_top, self.rect.bottom, screen_spacing):
+                gfxdraw.pixel(display.window, x, y, (255, 255, 255))
+
+    def _convert_world_to_screen(self, pos):
+        #find the relative position in the slice rectangle
+        x_relative = (pos[0] - self._slice_rect.left) / self._slice_rect.width
+        y_relative = (pos[1] - self._slice_rect.top) / self._slice_rect.height
+
+        #find the matching relative position in the screen
+        x = int(self.rect.width * x_relative)
+        y = int(self.rect.height * y_relative)
+
+        return (x, y)
 
     def _update_slice_rect(self):
         #take our screen dimensions and blow them up according to our scale
@@ -129,16 +159,7 @@ class Map2DWindow(Window):
         # we need to convert the map co-ordinates to window co-ordinates
         objects = {}
         for pos in raw:
-            #find the relative position in the slice rectangle
-            x_relative = (pos[0] - self._slice_rect.left) / self._slice_rect.width
-            y_relative = (pos[1] - self._slice_rect.top) / self._slice_rect.height
-
-            #find the matching relative position in the screen
-            x = self.rect.width * x_relative
-            y = self.rect.height * y_relative
-
-            new_pos = (x, y)
-            objects[new_pos] = raw[pos]
+            objects[self._convert_world_to_screen(pos)] = raw[pos]
         
         return objects
 

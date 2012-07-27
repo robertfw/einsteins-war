@@ -5,6 +5,7 @@ from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_q, K_e, K_UP, K_DOWN, 
 from engine.map import Map2DWindow
 from game import commands
 from game.units import AU, LY
+from game.galaxy import Galaxy
 from game.systems import milkyway
 from game.ship import Ship
 import pygame
@@ -43,15 +44,16 @@ class Game(GameCore):
         }
 
         #create a new window, make it the full size of our current display
-        galaxy = milkyway.create()
-        galaxy_window = Map2DWindow(map2d=galaxy.map, rect=((0, 0), self.display.resolution), game=self, draw_grid=True, grid_spacing=5)
+        #galaxy = milkyway.create()
+        galaxy = Galaxy()
+        galaxy_window = Map2DWindow(map2d=galaxy.map, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(galaxy_window)
-        
         self.register_update_callback(galaxy.update)
+        self.register_pre_render_callback(galaxy_window.draw_grid)
 
         #add a ship and center the map on it
         player = Ship()
-        galaxy.map.add_object(player, (1 * AU, 1 * AU))
+        galaxy.map.add_object(player, (0, 0))
         self.register_update_callback(player.update)
 
         galaxy_window.lock_center(player)
@@ -76,6 +78,7 @@ class Game(GameCore):
             }
         })
 
+        #TODO: move this somewhere sensible
         def set_player_heading_from_mouse(event):
             #convert to be centered around a 0,0 in the middle
             x = event.pos[0] - galaxy_window.rect.centerx
@@ -140,7 +143,7 @@ class Game(GameCore):
         })
 
         widgets = []
-        widgets.append(TextWidget(binding=lambda: 'pos: {pos}'.format(pos=player.get_position()), font_size=20, color=(255, 50, 150)))
+        widgets.append(TextWidget(binding=lambda: 'pos: {x}, {y}'.format(x=int(player.get_position()[0]), y=int(player.get_position()[1])), font_size=20, color=(255, 50, 150)))
         widgets.append(TextWidget(binding=lambda: 'accell: {accell}'.format(accell=player.acceleration), font_size=20, color=(255, 50, 150)))
         widgets.append(TextWidget(binding=lambda: 'vector: {vector}'.format(vector=player.vector), font_size=20, color=(255, 50, 150)))
         widgets.append(TextWidget(binding=lambda: 'heading: {heading}'.format(heading=player.heading), font_size=20, color=(255, 150, 255)))

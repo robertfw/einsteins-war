@@ -36,6 +36,9 @@ class WrappedInteger(object):
     def __add__(self, other):
         return self._get_val_wrapped(self.value + other)
 
+    def __sub__(self, other):
+        return self._get_val_wrapped(self.value - other)        
+
     def __iadd__(self, other):
         self.value = self.value + other
         return self

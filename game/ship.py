@@ -69,19 +69,19 @@ class Ship(OrientedBody):
 
         self.thrusters = {
             'main': {
-                'engine': Thruster(power=10),
+                'engine': Thruster(power=2),
                 'orientation': 180
             },
             'retro': {
-                'engine': Thruster(power=5),
+                'engine': Thruster(power=1),
                 'orientation': 0
             },
             'strafe_left': {
-                'engine': Thruster(power=5),
+                'engine': Thruster(power=1),
                 'orientation': 270
             },
             'strafe_right': {
-                'engine': Thruster(power=5),
+                'engine': Thruster(power=1),
                 'orientation': 90
             }
         }
@@ -111,7 +111,7 @@ class Ship(OrientedBody):
                 if distance > self.max_turn_rate:
                     turn_rate = self.max_turn_rate
                 else:
-                    turn_rate = relative.value
+                    turn_rate = distance
         else:
             turn_rate = self.max_turn_rate
 
