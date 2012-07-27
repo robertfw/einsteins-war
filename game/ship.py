@@ -65,7 +65,7 @@ class Ship(OrientedBody):
     
     def __init__(self):
         OrientedBody.__init__(self)
-        self.heading = Heading(45)
+        self.heading = Heading(0)
 
         self.thrusters = {
             'main': {
