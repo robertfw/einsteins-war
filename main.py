@@ -1,7 +1,7 @@
 from __future__ import division
 from engine.core import GameCore
 from engine.widgets import TextWidget
-from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, MOUSEMOTION, MOUSEBUTTONDOWN
+from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, MOUSEMOTION, MOUSEBUTTONDOWN, K_SPACE, KEYDOWN, KEYUP
 from engine.map import Map2DWindow
 from game import commands
 from game.units import AU
@@ -33,23 +33,26 @@ class Game(GameCore):
 
         self.keyboard.bindings = {
             K_w: {
-                'down': lambda: commands.player_main_engine_on(player),
-                'up': lambda: commands.player_main_engine_off(player)
+                KEYDOWN: lambda: commands.player_main_engine_on(player),
+                KEYUP: lambda: commands.player_main_engine_off(player)
             },
             K_s: {
-                'down': lambda: commands.player_retro_engine_on(player),
-                'up': lambda: commands.player_retro_engine_off(player)
+                KEYDOWN: lambda: commands.player_retro_engine_on(player),
+                KEYUP: lambda: commands.player_retro_engine_off(player)
             },
             K_a: {
-                'down': lambda: commands.player_left_engine_on(player),
-                'up': lambda: commands.player_left_engine_off(player)
+                KEYDOWN: lambda: commands.player_left_engine_on(player),
+                KEYUP: lambda: commands.player_left_engine_off(player)
             },
             K_d: {
-                'down': lambda: commands.player_right_engine_on(player),
-                'up': lambda: commands.player_right_engine_off(player)
+                KEYDOWN: lambda: commands.player_right_engine_on(player),
+                KEYUP: lambda: commands.player_right_engine_off(player)
+            },
+            K_SPACE: {
+                KEYDOWN: lambda: galaxy_window.lock_center(player)
             },
             K_ESCAPE: {
-                'down': commands.quit
+                KEYDOWN: commands.quit
             }
         }
 

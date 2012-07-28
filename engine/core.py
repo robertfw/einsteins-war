@@ -5,6 +5,7 @@ from engine.render import Display, WindowManager
 from engine.controls import KeyBoardController, MouseController
 from engine.widgets import WidgetHandler
 from engine.gameclock import GameClock
+import logging
 
 
 class GameCore(object):
@@ -18,6 +19,9 @@ class GameCore(object):
     post_render_callbacks = []
 
     def __init__(self, *args, **kwargs):
+
+        logging.basicConfig(format='%(asctime)s %(module)s:%(lineno)d %(message)s', level=logging.DEBUG)
+        logging.info('Initializing engine')
 
         pygame.init()
         
