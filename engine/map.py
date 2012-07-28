@@ -2,6 +2,7 @@ from __future__ import division
 from engine.render import Window
 from engine.rect import Rect
 from pygame import gfxdraw
+from game.units import AU, LY
 
 
 class Map2D(object):
@@ -72,6 +73,29 @@ class Map2DWindow(Window):
 
         self._dirty_slice = True
 
+    #TODO: revisit this and the convert_scale function to see if they make sense to be here
+    def get_viewport_range(self):
+            return '{width} x {height}'.format(width=self.convert_scale(self.rect.right), height=self.convert_scale(self.rect.height))
+
+    def convert_scale(self, width):
+        amount = 1 / self.scale * width
+
+        if amount > LY:
+            amount = amount / LY
+            units = 'ly'
+        elif amount > AU:
+            amount = amount / AU
+            units = 'au'
+        elif amount > 1000:
+            amount = amount / 1000
+            units = 'km'
+        else:
+            units = 'm'
+
+        amount = round(amount, 2)
+
+        return '{amount:,.2f}{units}'.format(amount=amount, units=units)
+
     def draw_grid(self, display):
         spacing = 100
 
@@ -84,7 +108,7 @@ class Map2DWindow(Window):
         start_left = int(left + left % spacing)
         start_top = int(top + top % spacing)
 
-        screen_start = self._convert_world_to_screen((start_left, start_top))
+        screen_start = self.convert_world_to_screen((start_left, start_top))
         screen_left = screen_start[0]
         screen_top = screen_start[1]
         screen_spacing = int(spacing * self.scale)
@@ -93,7 +117,7 @@ class Map2DWindow(Window):
             for y in range(screen_top, self.rect.bottom, screen_spacing):
                 gfxdraw.pixel(display.window, x, y, (255, 255, 255))
 
-    def _convert_world_to_screen(self, pos):
+    def convert_world_to_screen(self, pos):
         #find the relative position in the slice rectangle
         x_relative = (pos[0] - self._slice_rect.left) / self._slice_rect.width
         y_relative = (pos[1] - self._slice_rect.top) / self._slice_rect.height
@@ -101,6 +125,17 @@ class Map2DWindow(Window):
         #find the matching relative position in the screen
         x = int(self.rect.width * x_relative)
         y = int(self.rect.height * y_relative)
+
+        return (x, y)
+
+    def convert_screen_to_world(self, pos):
+        #find the relative position in the window
+        x_relative = (pos[0] - self.rect.left) / self.rect.width
+        y_relative = (pos[1] - self.rect.top) / self.rect.height
+
+        #find the matching relative position in the slice
+        x = int(self._slice_rect.width * x_relative)
+        y = int(self._slice_rect.height * y_relative)
 
         return (x, y)
 
@@ -159,7 +194,7 @@ class Map2DWindow(Window):
         # we need to convert the map co-ordinates to window co-ordinates
         objects = {}
         for pos in raw:
-            objects[self._convert_world_to_screen(pos)] = raw[pos]
+            objects[self.convert_world_to_screen(pos)] = raw[pos]
         
         return objects
 
@@ -230,6 +265,10 @@ class Map2DWindow(Window):
     def lock_center(self, obj):
         self._locked_object = obj
         self.game.register_update_callback(self.update_center)
+
+    def unlock_center(self):
+        self._locked_obj = None
+        self.game.unregister_update_callback(self.update_center)
 
     def update_center(self, dt):
         if self._locked_object is not None:

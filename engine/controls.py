@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, KEYUP
+from pygame.locals import KEYDOWN, KEYUP, MOUSEBUTTONDOWN
 
 
 class KeyBoardController(object):
@@ -22,4 +22,8 @@ class MouseController(object):
 
     def handle(self, event):
         if event.type in self.bindings:
-            self.bindings[event.type](event)
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button in self.bindings[MOUSEBUTTONDOWN]:
+                    self.bindings[MOUSEBUTTONDOWN][event.button](event)
+            else:
+                self.bindings[event.type](event)
