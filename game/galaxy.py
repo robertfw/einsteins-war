@@ -1,10 +1,10 @@
 from __future__ import division
+import math
 from engine.map import Map2D
 from engine.render import Sprite
+from engine.utils import memoize
 from pygame import draw
 from pygame.surface import Surface
-import math
-from engine.utils import memoize
 
 
 class GalaxyFactory(object):

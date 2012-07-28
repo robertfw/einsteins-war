@@ -1,4 +1,5 @@
 from engine import utils
+import math
 
 
 def quit():
@@ -41,19 +42,16 @@ def set_player_heading_from_mouse(event, window, player):
     #convert to be centered around a 0,0 in the middle
     x = event.pos[0] - window.rect.centerx
     y = event.pos[1] - window.rect.centery
-
-    import math
+    
     theta_rad = math.atan2(y, x)
     degrees = math.degrees(theta_rad)
 
-    #TODO: tidy this up
     if degrees >= 0:
         heading = degrees + 90
-    elif degrees < 0:
-        if degrees < -90:
-            heading = 360 - abs(degrees) + 90
-        else:
-            heading = 90 - abs(degrees)
+    elif degrees < -90:
+        heading = 360 - abs(degrees) + 90
+    else:
+        heading = 90 - abs(degrees)
 
     if heading == 360:
         heading = 0
@@ -76,6 +74,7 @@ def zoom_map_out(event, window, amount):
 def set_map_center_from_mouse_click(event, window, unlock_if_locked=True):
     if unlock_if_locked:
         #TODO: review if this error handling is ok
+        #this catches a value error when the view is not locked to an object
         try:
             window.unlock_center()
         except ValueError:

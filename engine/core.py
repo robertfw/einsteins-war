@@ -36,15 +36,17 @@ class GameCore(object):
         else:
             time_source = lambda: pygame.time.get_ticks() / 1000.
 
-        self.clock = GameClock(max_ups=30,
+        self.clock = GameClock(
+                  max_ups=30,
                   max_fps=0,
                   use_wait=False,
                   update_callback=self._update,
                   frame_callback=self._draw,
                   paused_callback=None,
                   time_source=time_source
-                  )
+        )
 
+    #TODO: consider removing these getter/setter style methods
     def register_update_callback(self, callback):
         self.update_callbacks.append(callback)
 
@@ -78,8 +80,7 @@ class GameCore(object):
             callback(self.display)
 
         # tell all windows to render
-        #TODO: should we denote that get_window_layers returns a generator?
-        map(lambda layer: self.display.draw_sprite_map(layer), self.windows.get_window_layers(interpolation))
+        map(self.display.draw_sprite_map, self.windows.get_window_layers(interpolation))
 
         #draw any widgets
         self.widgets.update(interpolation)

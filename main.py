@@ -24,10 +24,8 @@ class Game(GameCore):
 
         #add a ship and center the map on it
         player = Ship()
-
         galaxy.map.add_object(player, (1 * AU, 1 * AU))
         self.register_update_callback(player.update)
-
         galaxy_window.lock_center(player)
         galaxy_window.scale = 2
 
