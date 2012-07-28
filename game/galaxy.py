@@ -31,10 +31,9 @@ def generate_sphere_sprite(radius, color, scale, layer=None):
     sprite = Sprite()
     if layer is not None:
         sprite.layer = layer
-
-    print scaled_radius * 2
-
-    surface = Surface((scaled_radius * 2, scaled_radius * 2))
+    
+    width = height = scaled_radius * 2
+    surface = Surface((width, height))
     surface.set_colorkey((0, 0, 0))
     draw.circle(surface, color, (scaled_radius, scaled_radius), scaled_radius, 0)
     sprite.image = surface

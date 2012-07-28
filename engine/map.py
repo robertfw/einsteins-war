@@ -134,8 +134,8 @@ class Map2DWindow(Window):
         y_relative = (pos[1] - self.rect.top) / self.rect.height
 
         #find the matching relative position in the slice
-        x = int(self._slice_rect.width * x_relative)
-        y = int(self._slice_rect.height * y_relative)
+        x = self._slice_rect.left + int(self._slice_rect.width * x_relative)
+        y = self._slice_rect.top + int(self._slice_rect.height * y_relative)
 
         return (x, y)
 
