@@ -161,5 +161,5 @@ class Game(GameCore):
         for i in range(len(widgets)):
             self.widgets.add_widget(widgets[i], (widget_x, widget_y - (widget_spacing * i)))
 
-#Game((0, 0), pygame.FULLSCREEN).run()
-Game((800, 800)).run()
+Game((0, 0), pygame.FULLSCREEN).run()
+#Game((800, 800)).run()

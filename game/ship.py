@@ -17,7 +17,7 @@ class RigidBody(object):
     def update(self, dt):
         self.vector += self.acceleration
         cur_pos = self.get_position()
-        new_pos = (cur_pos[0] + self.vector[0], cur_pos[1] + self.vector[1])
+        new_pos = (cur_pos[0] + self.vector[0], cur_pos[1] - self.vector[1])
 
         self.map.move_object(self, new_pos)
 
