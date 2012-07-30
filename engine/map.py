@@ -73,6 +73,8 @@ class Map2DWindow(Window):
 
         self._dirty_slice = True
 
+        self._update_slice_rect()
+
     #TODO: revisit this and the convert_scale function to see if they make sense to be here
     def get_viewport_range(self):
             return '{width} x {height}'.format(width=self.convert_scale(self.rect.right), height=self.convert_scale(self.rect.height))

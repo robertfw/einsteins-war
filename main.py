@@ -16,7 +16,9 @@ class Game(GameCore):
         super(Game, self).__init__(*args, **kwargs)
 
         #create a new window, make it the full size of our current display
-        galaxy = milkyway.create()
+        #galaxy = milkyway.create()
+        from game.galaxy import Galaxy
+        galaxy = Galaxy()
         galaxy_window = Map2DWindow(map2d=galaxy.map, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(galaxy_window)
         self.register_update_callback(galaxy.update)
@@ -24,7 +26,8 @@ class Game(GameCore):
 
         #add a ship and center the map on it
         player = Ship()
-        galaxy.map.add_object(player, (1 * AU, 1 * AU))
+        #galaxy.map.add_object(player, (1 * AU, 1 * AU))
+        galaxy.map.add_object(player, (0, 0))
         self.register_update_callback(player.update)
         galaxy_window.lock_center(player)
         galaxy_window.scale = 2

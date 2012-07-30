@@ -17,6 +17,7 @@ class RigidBody(object):
     def update(self, dt):
         self.vector += self.acceleration
         cur_pos = self.get_position()
+        
         new_pos = (cur_pos[0] + self.vector[0], cur_pos[1] - self.vector[1])
 
         self.map.move_object(self, new_pos)
@@ -36,7 +37,6 @@ class RigidBody(object):
 
 class OrientedBody(RigidBody):
     def __init__(self):
-        #TODO: investigate use of super, whether it should be used, etc
         RigidBody.__init__(self)
         self.heading = Heading(0)
 
@@ -67,6 +67,7 @@ class Ship(OrientedBody):
         OrientedBody.__init__(self)
         self.heading = Heading(0)
 
+        #orientation is the direction the nozzle is facing
         self.thrusters = {
             'main': {
                 'engine': Thruster(power=2),
@@ -123,7 +124,7 @@ class Ship(OrientedBody):
         self.acceleration = Vec2d(0, 0)
         for thruster in self.thrusters:
             engine = self.thrusters[thruster]['engine']
-            orientation = self.thrusters[thruster]['orientation']
+            orientation = self.thrusters[thruster]['orientation'] + 180
 
             if engine.on:
                 self.apply_relative_impulse(orientation, engine.power)
