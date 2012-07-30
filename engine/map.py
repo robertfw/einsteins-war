@@ -267,7 +267,7 @@ class Map2DWindow(Window):
         self.game.register_update_callback(self.update_center)
 
     def unlock_center(self):
-        self._locked_obj = None
+        self._locked_object = None
         self.game.unregister_update_callback(self.update_center)
 
     def update_center(self, dt):

@@ -20,7 +20,7 @@ class Game(GameCore):
         galaxy_window = Map2DWindow(map2d=galaxy.map, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(galaxy_window)
         self.register_update_callback(galaxy.update)
-        #self.register_pre_render_callback(galaxy_window.draw_grid)
+        self.register_pre_render_callback(galaxy_window.draw_grid)
 
         #add a ship and center the map on it
         player = Ship()
@@ -29,6 +29,8 @@ class Game(GameCore):
         galaxy_window.lock_center(player)
         galaxy_window.scale = 2
 
+        #TODO: figure out a better way to pass context items like player or galaxy_window to commands
+        #so that they have the same method signature
         self.keyboard.bindings = {
             K_w: {
                 KEYDOWN: lambda: commands.player_main_engine_on(player),
@@ -47,7 +49,7 @@ class Game(GameCore):
                 KEYUP: lambda: commands.player_right_engine_off(player)
             },
             K_SPACE: {
-                KEYDOWN: lambda: galaxy_window.lock_center(player)
+                KEYDOWN: lambda: commands.toggle_player_view_lock(player, galaxy_window)
             },
             K_ESCAPE: {
                 KEYDOWN: commands.quit

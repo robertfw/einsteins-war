@@ -69,7 +69,7 @@ class Ship(OrientedBody):
 
         self.thrusters = {
             'main': {
-                'engine': Thruster(power=500),
+                'engine': Thruster(power=2),
                 'orientation': 180
             },
             'retro': {

@@ -38,10 +38,18 @@ def player_right_engine_off(player):
     player.set_thruster('right', False)
 
 
+def toggle_player_view_lock(player, window):
+    if window._locked_object is None:
+        window.lock_center(player)
+    else:
+        window.unlock_center()
+
+
 def set_player_heading_from_mouse(event, window, player):
-    #convert to be centered around a 0,0 in the middle
-    x = event.pos[0] - window.rect.centerx
-    y = event.pos[1] - window.rect.centery
+    #convert to be centered the player ship
+    player_screen = window.convert_world_to_screen(player.get_position())
+    x = event.pos[0] - player_screen[0]
+    y = event.pos[1] - player_screen[1]
     
     theta_rad = math.atan2(y, x)
     degrees = math.degrees(theta_rad)
@@ -73,11 +81,6 @@ def zoom_map_out(event, window, amount):
 
 def set_map_center_from_mouse_click(event, window, unlock_if_locked=True):
     if unlock_if_locked:
-        #TODO: review if this error handling is ok
-        #this catches a value error when the view is not locked to an object
-        try:
-            window.unlock_center()
-        except ValueError:
-            pass
+        window.unlock_center()
 
     window.center = window.convert_screen_to_world(event.pos)

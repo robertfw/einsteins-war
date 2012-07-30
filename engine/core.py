@@ -51,19 +51,28 @@ class GameCore(object):
         self.update_callbacks.append(callback)
 
     def unregister_update_callback(self, callback):
-        self.update_callbacks.remove(callback)
+        try:
+            self.update_callbacks.remove(callback)
+        except ValueError:
+            pass
 
     def register_pre_render_callback(self, callback):
         self.pre_render_callbacks.append(callback)
 
     def unregister_pre_render_callback(self, callback):
-        self.pre_render_callbacks.remove(callback)
+        try:
+            self.pre_render_callbacks.remove(callback)
+        except ValueError:
+            pass
 
     def register_post_render_callback(self, callback):
         self.post_render_callbacks.append(callback)
 
     def unregister_post_render_callback(self, callback):
-        self.post_render_callbacks.remove(callback)
+        try:
+            self.post_render_callbacks.remove(callback)
+        except ValueError:
+            pass
 
     def _update(self, dt):
         self._handle_events()
