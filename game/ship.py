@@ -5,6 +5,7 @@ from engine.structures import Vec2d, Heading
 import math
 
 
+#TODO: move this to engine
 class RigidBody(object):
     mass = 10  # in kilograms
     vector = None
@@ -17,7 +18,7 @@ class RigidBody(object):
     def update(self, dt):
         self.vector += self.acceleration
         cur_pos = self.get_position()
-        
+
         new_pos = (cur_pos[0] + self.vector[0], cur_pos[1] - self.vector[1])
 
         self.map.move_object(self, new_pos)
@@ -54,7 +55,7 @@ class Thruster(object):
         self.power = power
 
     on = False
-    
+
 
 class Ship(OrientedBody):
     size = 100
@@ -62,7 +63,7 @@ class Ship(OrientedBody):
     turning_left = False
     turning_right = False
     _ordered_heading = None
-    
+
     def __init__(self):
         OrientedBody.__init__(self)
         self.heading = Heading(0)

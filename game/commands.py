@@ -50,7 +50,7 @@ def set_player_heading_from_mouse(event, window, player):
     player_screen = window.convert_world_to_screen(player.get_position())
     x = event.pos[0] - player_screen[0]
     y = event.pos[1] - player_screen[1]
-    
+
     theta_rad = math.atan2(y, x)
     degrees = math.degrees(theta_rad)
 
@@ -63,7 +63,7 @@ def set_player_heading_from_mouse(event, window, player):
 
     if heading == 360:
         heading = 0
-    
+
     heading = round(heading)
 
     player.order_heading(heading)
@@ -84,3 +84,11 @@ def set_map_center_from_mouse_click(event, window, unlock_if_locked=True):
         window.unlock_center()
 
     window.center = window.convert_screen_to_world(event.pos)
+
+
+def cycle_galaxy_index(galaxy_window):
+    galaxy_window.index_pointer += 1
+    if galaxy_window.index_pointer >= len(galaxy_window.index_cycle):
+        galaxy_window.index_pointer = 0
+
+    galaxy_window.lock_center(galaxy_window.index_cycle[galaxy_window.index_pointer])

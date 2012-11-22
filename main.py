@@ -1,7 +1,7 @@
 from __future__ import division
 from engine.core import GameCore
 from engine.widgets import TextWidget
-from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, MOUSEMOTION, MOUSEBUTTONDOWN, K_SPACE, KEYDOWN, KEYUP
+from pygame.locals import K_ESCAPE, K_w, K_a, K_s, K_d, K_RETURN, MOUSEMOTION, MOUSEBUTTONDOWN, K_SPACE, KEYDOWN, KEYUP
 from engine.map import Map2DWindow
 from game import commands
 from game.units import AU
@@ -16,21 +16,22 @@ class Game(GameCore):
         super(Game, self).__init__(*args, **kwargs)
 
         #create a new window, make it the full size of our current display
-        #galaxy = milkyway.create()
-        from game.galaxy import Galaxy
-        galaxy = Galaxy()
+        galaxy = milkyway.create()
         galaxy_window = Map2DWindow(map2d=galaxy.map, rect=((0, 0), self.display.resolution), game=self)
         self.windows.add_window(galaxy_window)
         self.register_update_callback(galaxy.update)
-        self.register_pre_render_callback(galaxy_window.draw_grid)
+        #self.register_pre_render_callback(galaxy_window.draw_grid)
 
         #add a ship and center the map on it
         player = Ship()
-        #galaxy.map.add_object(player, (1 * AU, 1 * AU))
-        galaxy.map.add_object(player, (0, 0))
+        galaxy.map.add_object(player, (1 * AU, 1 * AU))
         self.register_update_callback(player.update)
-        galaxy_window.lock_center(player)
-        galaxy_window.scale = 2
+        #galaxy_window.lock_center(player)
+        galaxy_window.scale = 0.000001
+
+        galaxy_window.index_cycle = galaxy.index.values()
+        galaxy_window.index_pointer = 0
+        galaxy_window.lock_center(galaxy_window.index_cycle[galaxy_window.index_pointer])
 
         #TODO: figure out a better way to pass context items like player or galaxy_window to commands
         #so that they have the same method signature
@@ -56,6 +57,9 @@ class Game(GameCore):
             },
             K_ESCAPE: {
                 KEYDOWN: commands.quit
+            },
+            K_RETURN: {
+                KEYDOWN: lambda: commands.cycle_galaxy_index(galaxy_window)
             }
         }
 
@@ -63,8 +67,8 @@ class Game(GameCore):
             MOUSEMOTION: lambda event: commands.set_player_heading_from_mouse(event, galaxy_window, player),
             MOUSEBUTTONDOWN: {
                 1: lambda event: commands.set_map_center_from_mouse_click(event, galaxy_window),
-                4: lambda event: commands.zoom_map_in(event, galaxy_window, 2),
-                5: lambda event: commands.zoom_map_out(event, galaxy_window, 2)
+                4: lambda event: commands.zoom_map_in(event, galaxy_window, 1.1),
+                5: lambda event: commands.zoom_map_out(event, galaxy_window, 1.1)
             }
         }
 

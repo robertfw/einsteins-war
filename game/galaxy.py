@@ -17,21 +17,23 @@ class GalaxyFactory(object):
     def create(self):
         galaxy = Galaxy()
         for system_generator in self.systems:
-            system_generator(galaxy)
+            system_index = system_generator(galaxy)
+            if type(system_index) == dict:
+                galaxy.index.update(system_index)
 
         return galaxy
-        
+
 
 @memoize
 def generate_sphere_sprite(radius, color, scale, layer=None):
     scaled_radius = int(round(radius * scale))
     if scaled_radius <= 0:
         scaled_radius = 1
-    
+
     sprite = Sprite()
     if layer is not None:
         sprite.layer = layer
-    
+
     width = height = scaled_radius * 2
     surface = Surface((width, height))
     surface.set_colorkey((0, 0, 0))
@@ -90,7 +92,8 @@ class Orbit(object):
 
         # determine our angular velocity, in degrees per second
         self._angular_velocity = 360 / (self.period * 24 * 60 * 60)
-        
+        #self._angular_velocity = 360 / (self.period * 24)
+
     def update_position(self, dt):
         self._cur_angle += self._angular_velocity * dt
 
@@ -115,6 +118,7 @@ class Galaxy(object):
 
     map = None
     orbits = []
+    index = {}
 
     def __init__(self):
         self.map = Map2D()

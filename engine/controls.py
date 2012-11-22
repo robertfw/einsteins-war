@@ -10,9 +10,11 @@ class KeyBoardController(object):
         pygame.key.set_repeat(delay, interval)
 
     def handle(self, event):
-        callback = self.bindings.get(event.key).get(event.type)
-        if callback:
+        try:
+            callback = self.bindings[event.key][event.type]
             callback()
+        except KeyError:
+            pass
 
 
 class MouseController(object):

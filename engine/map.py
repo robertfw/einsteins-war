@@ -13,7 +13,7 @@ class Map2D(object):
 
     def add_object(self, obj, pos):
         key = id(obj)
-        
+
         #TODO: is adding object attributes like this this bad form?
         #(it sure is nice to be able to just do it!)
         obj.map = self
@@ -62,7 +62,7 @@ class Map2DWindow(Window):
     _pan_vector = (0, 0)  # describes movement of the center
     delta_zoom = 0  # describes movement in zoom
     _viewable_objects = {}  # stores objects/interpolated positions in between updates
-    
+
     def __init__(self, *args, **kwargs):
         super(Map2DWindow, self).__init__(*args, **kwargs)
 
@@ -167,7 +167,7 @@ class Map2DWindow(Window):
 
         for pos in self._viewable_objects:
             obj = self._viewable_objects[pos]
-                        
+
             #ask for forgiveness, not for permission
             try:
                 sprite = obj.get_sprite(display_scale)
@@ -179,12 +179,12 @@ class Map2DWindow(Window):
                 #we need to fill in any layers behind us
                 for i in range(len(layers), sprite.layer + 1):
                     layers.append({})
-                
+
                 layers[sprite.layer][pos] = sprite
             except AttributeError:
                 # thrown when the object doesn't have a sprite. don't draw it
                 pass
-        
+
         return layers
 
     def get_objects(self):
@@ -197,7 +197,7 @@ class Map2DWindow(Window):
         objects = {}
         for pos in raw:
             objects[self.convert_world_to_screen(pos)] = raw[pos]
-        
+
         return objects
 
     @property
